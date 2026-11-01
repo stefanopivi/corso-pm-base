@@ -1,0 +1,881 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>L'open day dei neoassunti — Esercizio di pianificazione</title>
+<meta name="description" content="Esercizio in team del corso di Project Management base: dalla PBS al Gantt a risorse finite.">
+<meta name="theme-color" content="#0555FA">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230555FA'/%3E%3Ctext x='50' y='68' font-size='56' font-family='Arial' font-weight='700' text-anchor='middle' fill='white'%3EPM%3C/text%3E%3C/svg%3E">
+<style>
+:root{--blue:#0555FA;--red:#E61400;--green:#008556;--ink:#111;--muted:#555;--line:#8c8c8c;--grey:#C6C6C6;--soft:#F2F3F5;--ok-bg:#E6F4EE;--ko-bg:#FDEBE8;--warn-bg:#FFF6DB}
+*{box-sizing:border-box}
+html{color-scheme:light;-webkit-text-size-adjust:100%}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#fff;line-height:1.4}
+button,input,select{font-family:inherit}
+.top{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--grey);border-top:4px solid var(--blue)}
+.top-in{max-width:760px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-weight:700;font-size:15px}.brand small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+main{max-width:760px;margin:0 auto;padding:16px 16px 120px}
+h1{margin:0;font-size:26px;line-height:1.15}h2{margin:0 0 8px;font-size:18px}h3{margin:0 0 6px;font-size:16px}
+.eyebrow{margin:0 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.lead{margin:6px 0 14px;font-size:17px;color:var(--muted)}
+[tabindex="-1"]:focus{outline:none}
+.btn{min-height:46px;padding:0 16px;border-radius:12px;border:2px solid var(--ink);background:#fff;color:var(--ink);font-size:16px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.primary:hover{background:#0446d4}
+.btn.small{min-height:38px;padding:0 12px;font-size:14px}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.card{background:var(--soft);border-radius:16px;padding:16px;margin-top:14px}
+.card p{margin:0 0 8px}.card ul{margin:0;padding-left:20px}.card li{margin-bottom:5px}
+.case{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:16px;margin-top:14px}
+.case p{margin:0 0 8px}.case ul{margin:0 0 4px;padding-left:20px}.case li{margin-bottom:6px}
+.case .eyebrow{color:var(--blue)}
+.talk{background:var(--warn-bg);border-radius:16px;padding:14px 16px;margin-top:14px}
+.talk h3,.app>h2{display:flex;align-items:center;gap:8px}
+.talk ul{margin:0;padding-left:20px}
+.app{border-top:3px solid var(--blue);margin-top:22px;padding-top:12px}
+.app>h2 .ic{color:var(--blue)}.talk h3 .ic{color:#8a6d00}
+.ic{display:inline-block;vertical-align:middle;flex:none}
+/* percorso a tappe */
+.steps{display:flex;gap:4px;overflow-x:auto;padding:4px 2px 10px;margin:0 -2px 6px;scrollbar-width:thin}
+.st{flex:1 0 64px;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:2px;cursor:pointer;color:var(--muted);font-size:11px;font-weight:700;position:relative}
+.st:disabled{cursor:default}
+.st .dot{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--grey);color:var(--muted);position:relative;z-index:1}
+.st::before{content:"";position:absolute;top:21px;left:-50%;width:100%;height:3px;background:var(--grey);z-index:0}
+.st:first-child::before{display:none}
+.st.done .dot{background:var(--green);border-color:var(--green);color:#fff}
+.st.done::before,.st.cur::before{background:var(--green)}
+.st.cur .dot{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 0 4px #cfdcff}
+.st.cur{color:var(--ink)}
+.st.done{color:var(--ink)}
+/* copertina */
+.cover{border-radius:20px;overflow:hidden;background:linear-gradient(135deg,#0555FA 0%,#157EA3 100%);color:#fff;padding:22px 20px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.cover h1{font-size:32px;color:#fff}.cover p{margin:8px 0 0;font-size:17px;color:#fff}
+.cover .eyebrow{color:#fff;opacity:.95}
+.kchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.kchips span{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5);border-radius:99px;padding:5px 12px;font-size:14px;font-weight:700}
+.cover svg{width:130px;height:auto}
+@media (max-width:520px){.cover{grid-template-columns:1fr}.cover svg{display:none}}
+.path{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.path span{background:#fff;border:2px solid var(--blue);color:var(--blue);border-radius:99px;padding:4px 10px;font-size:13px;font-weight:700}
+.path i{color:var(--muted);font-style:normal}
+/* persone */
+.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:10px;margin:8px 0 10px}
+.pcard{background:var(--soft);border-radius:14px;padding:12px;display:grid;grid-template-columns:48px 1fr;gap:10px;align-items:start}
+.av{width:48px;height:48px;border-radius:50%;color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center}
+.pcard b{display:block;font-size:15px}.pcard .rl{font-size:13px;color:var(--muted)}
+.pcard .bd{display:inline-block;margin:5px 0 4px;font-size:12px;font-weight:700;border-radius:99px;padding:2px 9px;background:#fff;border:1px solid var(--line)}
+.pcard .bd.sen{border-color:var(--green);color:#00694a}.pcard .bd.jun{border-color:var(--blue);color:#0446d4}
+.pcard .tx{font-size:13.5px;margin:0}
+.mav{width:26px;height:26px;border-radius:50%;color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;margin-bottom:3px}
+/* puntate */
+.case{border-left:8px solid var(--blue)}
+.case .ch{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.case .ch .ci{width:40px;height:40px;border-radius:10px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.case .ch .eyebrow{margin:0}
+.case.p2{border-left-color:var(--green)}.case.p2 .ci{background:var(--green)}
+.case.p3{border-left-color:#157EA3}.case.p3 .ci{background:#157EA3}
+.case.p4{border-left-color:#D64100}.case.p4 .ci{background:#D64100}
+.case.p5{border-left-color:var(--red)}.case.p5 .ci{background:var(--red)}
+.case.p2 li{background:#f7f5ee;border-radius:8px;padding:6px 8px;list-style:none;margin-left:-20px;border-left:3px solid #c9b88a}
+.hint{font-size:14px;color:var(--muted);margin:4px 0 10px}
+.ed{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.ed input{flex:1;min-height:46px;font-size:16px;padding:0 12px;border:2px solid var(--line);border-radius:12px;min-width:0}
+.x{width:46px;height:46px;flex:none;border:2px solid var(--line);background:#fff;border-radius:12px;font-size:18px;cursor:pointer;color:var(--ink)}
+.field{display:flex;flex-direction:column;gap:6px;margin-top:14px}.field label{font-weight:700;font-size:14px}
+.field input{min-height:50px;font-size:18px;padding:0 12px;border:2px solid var(--line);border-radius:12px;width:100%}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:5;background:#fff;border-top:1px solid var(--grey);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.nav-in{max-width:760px;margin:0 auto;display:flex;gap:8px}.nav .grow{flex:1}.nav[hidden]{display:none}
+.progress{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--muted)}.progress b{color:var(--ink)}
+.bar{height:8px;background:var(--grey);border-radius:99px;overflow:hidden;margin:8px 0 12px}.bar>span{display:block;height:100%;background:var(--blue);border-radius:99px}
+/* WBS */
+.branch{background:var(--soft);border-radius:14px;padding:12px;margin-top:10px;border-left:6px solid var(--blue)}
+.branch.un{background:#fff;border:2px dashed var(--line);border-left:6px solid var(--red)}
+.bh{display:flex;align-items:center;gap:6px;margin-bottom:6px}.bh h3{flex:1;margin:0}
+.code{display:inline-block;min-width:46px;font-weight:700;color:var(--blue)}
+.arow{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--grey);border-radius:10px;padding:6px 8px;margin-top:6px;flex-wrap:wrap}
+.arow .tx{flex:1;min-width:150px;font-weight:700;font-size:15px}
+.arow select{min-height:38px;border:2px solid var(--line);border-radius:8px;font-size:14px;max-width:190px;background:#fff}
+.mini{width:38px;height:38px;border:2px solid var(--line);background:#fff;border-radius:8px;font-size:16px;cursor:pointer;color:var(--ink)}
+.mini:disabled{opacity:.3}
+.empty{font-size:14px;color:var(--muted);font-style:italic;margin:4px 0}
+.org{overflow-x:auto;padding:6px 2px 10px;margin-top:10px}
+.org-root{display:inline-block;background:var(--ink);color:#fff;border-radius:10px;padding:8px 14px;font-weight:700;margin-bottom:10px}
+.org-row{display:flex;gap:10px;align-items:flex-start;min-width:min-content}
+.org-col{width:170px;flex:none}
+.org-br{background:var(--blue);color:#fff;border-radius:8px;padding:8px;font-weight:700;font-size:14px}
+.org-act{background:#fff;border:1px solid var(--grey);border-left:4px solid var(--blue);border-radius:6px;padding:6px 8px;font-size:13px;margin-top:6px}
+.org-act b{color:var(--blue)}
+/* consigli */
+.list{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:10px 12px;border-radius:12px;margin-bottom:8px;border:1px solid transparent}
+.row.ok{background:var(--ok-bg);border-color:#b9dfce}.row.ko{background:var(--ko-bg);border-color:#f3c3bc}.row.wa{background:var(--warn-bg);border-color:#ecd690}
+.mark{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:14px}
+.ok .mark{background:var(--green)}.ko .mark{background:var(--red)}.wa .mark{background:#8a6d00}
+.alt{background:#fff;border:1px solid var(--grey);border-radius:12px;padding:12px;margin-top:10px}
+.alt .pc{font-size:14px;margin-top:6px}
+.tree{margin:6px 0 0;padding-left:0;list-style:none;font-size:14px}.tree>li{margin-top:6px;font-weight:700}.tree ul{font-weight:400;margin:2px 0 0;padding-left:18px}
+/* stima */
+.est{background:#fff;border:1px solid var(--grey);border-radius:12px;padding:10px;margin-top:8px}
+.est .tx{font-weight:700}
+.est .ctl{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.est select{flex:1;min-width:190px;min-height:44px;border:2px solid var(--line);border-radius:10px;font-size:15px;background:#fff}
+.est input{width:96px;min-height:44px;border:2px solid var(--line);border-radius:10px;font-size:17px;padding:0 10px}
+.est .sug{font-size:13px;color:#5c4400;background:var(--warn-bg);border-radius:8px;padding:6px 8px;margin-top:8px}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+.calc .box{background:#fff;border-radius:12px;padding:10px;border:1px solid var(--grey)}
+.calc label{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:14px;margin-top:6px}
+.calc input{width:80px;min-height:38px;border:2px solid var(--line);border-radius:8px;font-size:15px;padding:0 8px}
+.calc .res{margin-top:8px;font-weight:700;color:var(--blue)}
+/* raci */
+.tscroll{overflow-x:auto;margin-top:10px}
+table.raci{border-collapse:collapse;font-size:14px;min-width:560px;width:100%;background:#fff}
+table.raci th,table.raci td{border:1px solid var(--grey);padding:4px;text-align:center}
+table.raci th{background:var(--ink);color:#fff;font-size:13px}
+table.raci td.al{text-align:left;font-weight:700;min-width:170px}
+.rc{width:100%;min-width:46px;height:40px;border:0;background:#fff;font-weight:700;font-size:15px;cursor:pointer;color:var(--ink)}
+.rc.R{background:#dce6ff}.rc.A{background:#ffe0dc}.rc.AR{background:#e9d8ff}.rc.C{background:#e3f3ea}.rc.I{background:#f1f1f1}
+/* dipendenze */
+.dep{background:#fff;border:1px solid var(--grey);border-radius:12px;padding:10px;margin-top:8px}
+.dep .tx{font-weight:700;margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{min-height:38px;padding:6px 10px;border:2px solid var(--line);background:#fff;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink);text-align:left}
+.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.chip[aria-pressed="true"]::before{content:"✓ "}
+.chip.cyc{background:var(--red)!important;border-color:var(--red)!important;color:#fff}
+.chip.cyc::before{content:"⚠ "!important}
+.chip.red{background:#FFE9A8!important;border-color:#c99a00!important;color:#111!important}
+.chip.red::before{content:"＝ "!important}
+.chip.blk{border-style:dashed;color:#8a8a8a;background:#f7f7f7}
+.chip.blk::before{content:"↺ "}
+.dep.r-ok{border-left:6px solid var(--green)}
+.dep.r-warn{border-left:6px solid #c99a00}
+.dep.r-bad{border-left:6px solid var(--red);background:#fff7f6}
+.dep .rel{font-size:13px;color:var(--muted);margin:6px 0 0}
+.dep .msg{margin-top:8px;border-radius:10px;padding:10px 12px;font-size:14px}
+.dep .msg.bad{background:var(--ko-bg);border:1px solid #f3c3bc}
+.dep .msg.warn{background:var(--warn-bg);border:1px solid #ecd690}
+.dep .msg.info{background:#eef3ff;border:1px solid #c9d8ff}
+.dep .msg .btn{margin-top:8px;margin-right:6px}
+.keyl{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px;font-size:13px}
+.keyl span{border-radius:8px;padding:4px 8px;border:2px solid var(--line);background:#fff;font-weight:700}
+.flow{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;align-items:stretch}
+.flow .lv{flex:none;min-width:150px;max-width:200px;background:#fff;border:1px solid var(--grey);border-radius:10px;padding:8px}
+.flow .lv h4{margin:0 0 6px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.flow .lv div{font-size:13px;font-weight:700;background:var(--soft);border-radius:6px;padding:5px 7px;margin-top:5px}
+.flow .arr{align-self:center;font-size:20px;color:var(--muted);flex:none}
+/* gantt */
+.gwrap{overflow-x:auto;margin-top:12px;background:#fff;border:1px solid var(--grey);border-radius:12px;padding:8px 8px 8px 0;width:min(1200px,calc(100vw - 32px));position:relative;left:50%;transform:translateX(-50%)}
+.gr{display:grid;align-items:center;min-height:40px;border-bottom:1px solid #eee}
+.gr .gl{grid-column:1;grid-row:1;font-size:13px;font-weight:700;padding:4px 10px;line-height:1.25;position:sticky;left:0;background:#fff;z-index:3;align-self:stretch;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--grey)}
+.gr .gl small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.gr .track{grid-row:1;align-self:stretch}
+.gr .dl{grid-row:1;align-self:stretch;background:#fde3df}
+.gr .gb{grid-row:1;height:24px;border-radius:5px;background:var(--blue);margin:0 2px;position:relative;z-index:1;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap}
+.gr .gb.crit{background:var(--red)}
+.gr .gb.cross{background:repeating-linear-gradient(45deg,#8c8c8c 0 6px,#b5b5b5 6px 12px);color:#111}
+.gr .gf{grid-row:1;height:8px;background:#9db8ff;border-radius:4px;margin:0 2px;z-index:1}
+.gr .ms{grid-row:1;text-align:center;color:var(--red);font-size:22px;line-height:1;z-index:1}
+.gr.hd{min-height:26px;background:#fafafa}
+.gr.hd .gl{background:#fafafa}
+.gh{font-size:11px;color:var(--muted);text-align:center;grid-row:1}
+.gh.wk{font-weight:700;color:var(--ink);border-left:2px solid var(--grey)}
+.load{grid-row:1;font-size:11px;text-align:center;height:24px;line-height:24px;margin:0 2px;border-radius:4px;z-index:1}
+.load.l1{background:#dce6ff}.load.l2{background:var(--red);color:#fff;font-weight:700}
+.legend{font-size:13px;color:var(--muted);margin-top:8px;display:flex;gap:14px;flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle;background:var(--c)}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+.kpi div{background:var(--ink);color:#fff;border-radius:12px;padding:12px;text-align:center}
+.kpi b{display:block;font-size:30px}.kpi small{color:#ddd}
+.kpi .bad{background:var(--red)}.kpi .good{background:var(--green)}
+.conf{background:var(--ko-bg);border:2px solid var(--red);border-radius:14px;padding:14px;margin-top:14px}
+.conf .opts{display:grid;gap:8px;margin-top:10px}
+.waitrow{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid #e5e5e5;font-size:15px}
+.waitrow input{width:22px;height:22px}
+table.sum{border-collapse:collapse;width:100%;font-size:13px;background:#fff;margin-top:8px}
+table.sum th,table.sum td{border:1px solid var(--grey);padding:5px;text-align:left;vertical-align:top}
+table.sum th{background:var(--ink);color:#fff}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100% - 24px);max-width:640px;max-height:88vh;color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+.dlg{padding:18px;overflow:auto;max-height:88vh}
+.dlg .actions{display:flex;gap:8px;margin-top:16px}.dlg .actions .btn{flex:1}
+.small{font-size:13px;color:var(--muted)}
+.err{color:#B00F00;font-weight:700;font-size:14px;margin-top:8px}
+@media print{.top,.nav,.noprint{display:none!important}main{padding:0;max-width:none}.gwrap,.tscroll{overflow:visible}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div class="brand">Project Management base<small>L'open day dei neoassunti · in team</small></div>
+  <button class="btn small" id="btnCase" type="button">Il caso</button>
+</div></header>
+<main id="main" tabindex="-1"></main>
+<div class="nav" id="nav" hidden><div class="nav-in" id="navin"></div></div>
+<dialog id="dlgCase" aria-labelledby="caseT"><div class="dlg">
+  <h2 id="caseT">Il caso fin qui</h2><div id="caseBody"></div>
+  <div class="actions"><button class="btn primary" type="button" data-close>Chiudi</button></div>
+</div></dialog>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= CASO A PUNTATE ================= */
+var P=[
+ {t:"Puntata 1 · L'incarico e le persone",h:
+  "<p>Sirio Energia (nome di fantasia) ha appena assunto 40 giovani tecnici e laureati. Paolo Ferri, Direttore del personale, vi nomina project manager dell'<b>open day di accoglienza</b>. Mancano sei settimane, cioè <b>30 giorni lavorativi</b>: il giorno 31 i neoassunti passeranno una giornata in sede. Quello che succede il giorno 31 non fa parte del progetto: il progetto finisce quando tutto è pronto.</p>"+
+  "<p>Ferri vi scrive: «Il giorno 31 mi aspetto che siano pronte cinque cose:</p><ul>"+
+  "<li>il <b>programma della giornata</b>, approvato da me, e le <b>presentazioni dei tre manager</b> che parleranno al mattino, rifatte con il nuovo modello grafico aziendale;</li>"+
+  "<li>i neoassunti <b>invitati e iscritti</b>: devo sapere chi viene;</li>"+
+  "<li>la <b>sala convegni prenotata e allestita</b> per 40 persone, con palco, proiettore e microfoni;</li>"+
+  "<li>un <b>kit di benvenuto</b> per ciascuno: badge con il nome e una cartellina stampata con il programma e i documenti, più qualche gadget;</li>"+
+  "<li>il <b>pranzo</b> per tutti, con un catering esterno.</li></ul>"+
+  "<p>Vi chiedo un aggiornamento ogni settimana e di tenere sotto controllo tempi e budget: abbiamo 8.000 euro. La data non si sposta.»</p>"+
+  "<p><b>Le persone</b></p>{{PERSONE}}"+
+  "<p><b>La prima riunione</b></p><ul>"+
+  "<li>Giulia: «L'elenco dei neoassunti ce l'ho già. Gli inviti li mando io per email, poi raccolgo le conferme. I kit li preparo io: i gadget sono già in magazzino.»</li>"+
+  "<li>Marco: «La sala la prenoto io e poi la allestisco con i tecnici. Il catering lo scelgo io tra i convenzionati: quello di due anni fa ha chiuso.»</li>"+
+  "<li>Luca: «Posso progettare la grafica di badge e cartelline e rifare le slide dei tre manager con il nuovo modello. La stampa la fa la tipografia convenzionata.»</li>"+
+  "<li>Il programma lo definite voi con i tre manager, e poi lo fate approvare a Ferri.</li></ul>"},
+ {t:"Puntata 2 · Quanto tempo serve?",h:
+  "<p>Ferri vuole sapere quanto tempo serve (sempre in giorni lavorativi). Avete il diario di John, un po' di numeri e le opinioni delle persone. Attenzione: non tutti i dati del passato valgono anche oggi.</p><ul>"+
+  "<li><b>Il programma.</b> Dal diario di John: «Programma definito con tre relatori in 6 giorni, tra mail e incontri.» Anche quest'anno i relatori sono tre e il lavoro è lo stesso.</li>"+
+  "<li><b>L'approvazione di Ferri.</b> Di solito risponde in 2 giorni.</li>"+
+  "<li><b>Le slide dei relatori.</b> John: «Slide affidate a un'agenzia: 4 giorni.» Quest'anno le fa Luca, con il nuovo modello: dice che gli servono 2 giorni per ciascuna delle tre presentazioni.</li>"+
+  "<li><b>Inviti e conferme.</b> Giulia: «Gli inviti li preparo e spedisco in 2 giorni.» Nell'invito si danno 10 giorni per rispondere.</li>"+
+  "<li><b>La sala.</b> La prenotazione si fa in un giorno. Per l'allestimento John scrive «2 giorni», ma allora la sala era piccola e senza palco. Avete chiesto a tre colleghi esperti di eventi, separatamente: primo giro 2, 5 e 8 giorni; dopo aver letto in forma anonima le motivazioni degli altri, secondo giro 3, 3 e 4; al terzo giro convergono su 3.</li>"+
+  "<li><b>La grafica di badge e cartelline.</b> Luca dice 3 giorni. Sara, la sua responsabile: «Luca lavora bene ma è giovane: di solito ci mette un terzo in più di quanto dice.» Due anni fa l'agenzia aveva impiegato 5 giorni.</li>"+
+  "<li><b>La stampa.</b> La tipografia convenzionata consegna in 5 giorni dall'invio dei file.</li>"+
+  "<li><b>I kit.</b> John: «Kit preparati in 3 giorni», ma allora erano 35 e lavoravano in due. Giulia sa che per un kit servono 30 minuti; i kit sono 40 e lei ci può dedicare 5 ore al giorno.</li>"+
+  "<li><b>Il catering.</b> John: «Catering prenotato in 4 giorni», ma il fornitore ha chiuso. Il nuovo dice che nel caso migliore conferma in 3 giorni, di solito in 5, nei periodi di punta anche in 13.</li>"+
+  "<li><b>Il coordinamento</b> (riunioni, controllo di tempi e budget, aggiornamenti a Ferri) accompagna tutto il progetto.</li></ul>"+
+  "<p>Per ogni attività chiedetevi: quale dato è affidabile oggi? Dati storici, una formula, esperti consultati in più giri, tre valori, il giudizio di chi conosce le persone: quale metodo usa meglio l'informazione che avete?</p>"},
+ {t:"Puntata 3 · Chi fa che cosa",h:
+  "<p>Ferri è lo sponsor. Voi, come project manager, <b>rispondete del risultato di tutte le attività</b> verso di lui. Per decidere chi esegue, chi va consultato e chi solo informato, tenete conto di quello che sapete delle persone.</p><ul>"+
+  "<li>Il programma lo scrivete voi, dopo aver <b>sentito</b> i tre manager. Ferri lo <b>approva</b>. Marco e Luca vogliono sapere quando è pronto: a Marco serve per allestire la sala, a Luca per le slide e la cartellina.</li>"+
+  "<li>Le slide le rifà Luca, ma i contenuti sono dei manager: vanno <b>consultati</b> prima di chiudere.</li>"+
+  "<li>Giulia esegue inviti, conferme e kit. È lei che conosce i nomi: per la grafica dei badge Luca dovrebbe <b>sentirla</b>.</li>"+
+  "<li>Luca segue anche la tipografia. È giovane: chi controlla il suo lavoro prima che vada in stampa?</li>"+
+  "<li>Marco prenota e allestisce la sala e sceglie il catering. Per il pranzo gli servono da Giulia il numero dei confermati e le esigenze alimentari. Ferri vuole essere <b>informato</b> sulla scelta del catering, perché pesa sul budget.</li>"+
+  "<li>Il coordinamento è vostro; Ferri riceve l'aggiornamento settimanale.</li></ul>"},
+ {t:"Puntata 4 · In che ordine?",h:
+  "<p>Alla seconda riunione chiarite l'ordine del lavoro.</p><ul>"+
+  "<li>Il <b>programma</b> va definito per primo, poi va <b>approvato</b> da Ferri. Senza approvazione non parte niente che lo contenga.</li>"+
+  "<li>Gli <b>inviti</b> contengono il programma approvato. Le <b>conferme</b> si raccolgono nei 10 giorni dopo l'invio.</li>"+
+  "<li>Le <b>slide</b> dei manager si rifanno sul programma approvato.</li>"+
+  "<li>La <b>grafica</b> di badge e cartelline si progetta quando il programma è approvato, perché la cartellina lo riporta. Poi i file vanno in <b>stampa</b>; i <b>kit</b> si preparano quando la tipografia ha consegnato.</li>"+
+  "<li>Luca vorrebbe aspettare le conferme per stampare solo i badge di chi viene. Ma la tipografia stampa tutti e 40 i badge allo stesso prezzo, e i kit vanno preparati per tutti.</li>"+
+  "<li>Il <b>catering</b> si sceglie e si prenota quando si sa quanti hanno confermato.</li>"+
+  "<li>La <b>prenotazione della sala</b> si può fare subito. L'<b>allestimento</b> si fa quando la sala è prenotata e il programma è approvato: bisogna sapere quanti interventi ci sono.</li>"+
+  "<li>Il <b>coordinamento</b> accompagna tutto il progetto e non dipende da nulla.</li></ul>"+
+  "<p>Non ci sono altri vincoli.</p>"},
+ {t:"Puntata 5 · Le persone non sono infinite",h:
+  "<p>Fin qui avete pianificato come se ci fossero tutte le persone che servono, quando servono. Ma ognuno può fare <b>una sola attività per volta</b>.</p><ul>"+
+  "<li><b>Luca</b> deve rifare le slide e progettare la grafica di badge e cartelline: chi viene prima?</li>"+
+  "<li><b>Giulia</b> manda gli inviti e prepara i kit. Raccogliere le conferme non la impegna: è un'attesa, al massimo un sollecito.</li>"+
+  "<li><b>Marco</b> fa una cosa per volta: prenotazione, allestimento, catering.</li>"+
+  "<li>La <b>stampa</b> la fa la tipografia e l'<b>approvazione</b> la dà Ferri: per il team sono attese.</li>"+
+  "<li>Sara può prestare un grafico esterno per 2.000 euro, se servisse.</li></ul>"+
+  "<p>Ferri vi ricorda che la data non si sposta: il giorno 31 tutto deve essere pronto.</p>"}
+];
+
+var ROLES=["Voi (PM)","Giulia","Marco","Luca","Direttore del personale","Manager relatori"];
+var METHODS=[["","Scegli il metodo…"],["ana","Progetti precedenti (analogia)"],["par","Algoritmo (parametrica)"],["del","Metodo Delphi"],["tre","Tre punti (PERT)"],["team","Giudizio del team"],["tra","Trasversale: dura tutto il progetto"]];
+var DEADLINE=30;
+
+/* ================= ICONE E PERSONE ================= */
+var ICP={
+ pbs:'<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/>',
+ att:'<path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01" stroke-width="3"/>',
+ org:'<rect x="9" y="2" width="6" height="5" rx="1"/><rect x="2" y="17" width="6" height="5" rx="1"/><rect x="16" y="17" width="6" height="5" rx="1"/><path d="M12 7v5M5 17v-5h14v5"/>',
+ cons:'<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>',
+ stima:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>',
+ raci:'<circle cx="9" cy="8" r="4"/><path d="M2 21v-1a6 6 0 0 1 12 0v1"/><circle cx="17" cy="9" r="3"/><path d="M15 21v-1a5 5 0 0 1 7-4.6"/>',
+ dip:'<circle cx="5" cy="12" r="3"/><circle cx="19" cy="5" r="3"/><circle cx="19" cy="19" r="3"/><path d="M8 11l8-5M8 13l8 5"/>',
+ gantt:'<path d="M3 5h8M7 12h10M12 19h9" stroke-width="3.2"/>',
+ fin:'<path d="M12 3v18M5 7h14M8 21h8"/><path d="M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/>',
+ end:'<path d="M4 22V3"/><path d="M4 4h13l-2 4 2 4H4"/>',
+ home:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
+ talk:'<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z"/>',
+ app:'<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M11 18h2"/>',
+ book:'<path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z"/><path d="M20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/>',
+ check:'<path d="M5 12l5 5 9-10" stroke-width="3"/>'};
+function ic(n,sz){return '<svg class="ic" width="'+(sz||22)+'" height="'+(sz||22)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICP[n]+'</svg>'}
+var PEOPLE=[
+ {n:"Paolo Ferri",i:"PF",c:"#E61400",r:"Direttore del personale",b:"Sponsor",k:"",t:"Molto impegnato: per approvare un documento impiega di solito due giorni."},
+ {n:"Giulia Rinaldi",i:"GR",c:"#008556",r:"Personale",b:"Senior · 15 anni",k:"sen",t:"Precisa e affidabile, conosce uno per uno i neoassunti. Ha già lavorato all'open day di due anni fa."},
+ {n:"Marco Bassi",i:"MB",c:"#D64100",r:"Servizi generali",b:"Senior · 20 anni",k:"sen",t:"Conosce la sala convegni, i tecnici audio e video e i fornitori convenzionati."},
+ {n:"Luca Ferretti",i:"LF",c:"#0555FA",r:"Comunicazione interna",b:"Junior · 2 anni",k:"jun",t:"Bravo con grafica e presentazioni, entusiasta. Sara Conti, la sua responsabile: «tende a essere ottimista sui tempi»."},
+ {n:"I tre manager relatori",i:"3M",c:"#157EA3",r:"Operations, Finanza, Innovazione",b:"Relatori",k:"",t:"Disponibili, ma con agende piene."},
+ {n:"John Moretti",i:"JM",c:"#555555",r:"Capo progetto di due anni fa",b:"Diario di progetto",k:"",t:"Ora lavora in un'altra sede, ma ha lasciato il suo diario con i numeri dell'open day precedente."}];
+function peopleHtml(){return '<div class="people">'+PEOPLE.map(function(p){return '<div class="pcard"><div class="av" style="background:'+p.c+'" aria-hidden="true">'+p.i+'</div><div><b>'+p.n+'</b><span class="rl">'+p.r+'</span><br><span class="bd '+p.k+'">'+p.b+'</span><p class="tx">'+p.t+'</p></div></div>'}).join("")+'</div>'}
+var ROLECOL=["#111111","#008556","#D64100","#0555FA","#E61400","#157EA3"],ROLEINI=["PM","GR","MB","LF","PF","3M"];
+function caseHtml(i){return P[i].h.replace("{{PERSONE}}",peopleHtml())}
+
+/* ================= STATO ================= */
+var nid=0;function uid(){return "k"+(++nid)}
+var S={step:0,team:"",pbs:[{id:uid(),t:""},{id:uid(),t:""},{id:uid(),t:""}],acts:[{id:uid(),t:""},{id:uid(),t:""},{id:uid(),t:""},{id:uid(),t:""}],
+  br:[],kids:{},est:{},raci:{},dep:{},wait:{},extra:[],extraSig:""};
+
+var STEPS=[
+ {k:"home",p:0,ic:"home",s:"Inizio"},{k:"pbs",t:"La PBS",p:0,ic:"pbs",s:"PBS"},{k:"att",t:"Le attività",p:0,ic:"att",s:"Attività"},{k:"org",t:"La WBS",p:0,ic:"org",s:"WBS"},{k:"cons",t:"Consigli sulla WBS",p:0,ic:"cons",s:"Consigli"},
+ {k:"stima",t:"La stima",p:1,ic:"stima",s:"Stima"},{k:"raci",t:"La RACI",p:2,ic:"raci",s:"RACI"},{k:"dip",t:"Le dipendenze",p:3,ic:"dip",s:"Legami"},{k:"gantt",t:"Gantt a risorse infinite",p:3,ic:"gantt",s:"Gantt"},
+ {k:"fin",t:"Gantt a risorse finite",p:4,ic:"fin",s:"Risorse"},{k:"end",t:"Riepilogo",p:4,ic:"end",s:"Fine"}];
+
+var main=document.getElementById("main"),nav=document.getElementById("nav"),navin=document.getElementById("navin");
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function each(sel,fn){Array.prototype.forEach.call(main.querySelectorAll(sel),fn)}
+function clean(list){return list.filter(function(x){return x.t.trim()})}
+
+/* ================= WBS: rami, codici, ordine ================= */
+function syncBranches(){
+  var pb=clean(S.pbs);
+  // tieni i rami aggiunti a mano, aggiorna quelli dalla PBS
+  S.br=S.br.filter(function(b){return !b.pbs||pb.some(function(p){return p.id===b.id})});
+  pb.forEach(function(p){var b=S.br.filter(function(x){return x.id===p.id})[0];if(b)b.t=p.t;else S.br.push({id:p.id,t:p.t,pbs:true})});
+  S.br.forEach(function(b){if(!S.kids[b.id])S.kids[b.id]=[]});
+  var valid={};clean(S.acts).forEach(function(a){valid[a.id]=1});
+  Object.keys(S.kids).forEach(function(k){
+    if(!S.br.some(function(b){return b.id===k})){delete S.kids[k];return}
+    S.kids[k]=S.kids[k].filter(function(id){return valid[id]});
+  });
+}
+function actById(id){return S.acts.filter(function(a){return a.id===id})[0]}
+function unplaced(){var placed={};Object.keys(S.kids).forEach(function(k){S.kids[k].forEach(function(id){placed[id]=1})});return clean(S.acts).filter(function(a){return !placed[a.id]})}
+function ordered(){ // attività nell'ordine della WBS, con codice e ramo
+  var out=[];S.br.forEach(function(b,i){(S.kids[b.id]||[]).forEach(function(id,j){var a=actById(id);if(a)out.push({id:id,t:a.t,code:"1."+(i+1)+"."+(j+1),br:b.t})})});return out;
+}
+function codeOf(id){var o=ordered().filter(function(a){return a.id===id})[0];return o?o.code:""}
+
+/* ================= CONSIGLI SULLA WBS ================= */
+var NOTVERB=/^(carattere|corriere|cantiere|quartiere|mestiere|potere|dovere|piacere|volere|sapere|messaggere|forestiere|cameriere|infermiere|tesoriere|consigliere|ingegnere|genere|bicchiere|pensiere|piere)$/;
+function isVerb(s){var w=s.trim().split(/[\s']/)[0].toLowerCase().replace(/[^a-zàèéìòù]/g,"");if(!w||NOTVERB.test(w))return false;if(/^(far|dar|aver|esser|tener|mantener|ottener|stabilir|veder|metter|por)$/.test(w))return true;return /(are|ere|ire|rre)(lo|la|li|le|ne|si|gli|ci|vi)?$/.test(w)||/(arsi|ersi|irsi)$/.test(w)}
+var THEMES=[
+ ["il programma e i relatori",/programm|relator|intervent|scalett|agenda|manager/i],
+ ["l'approvazione dello sponsor",/approv/i],
+ ["le slide dei relatori",/slide|presentazion/i],
+ ["la grafica e la stampa di badge e cartelline",/grafic|stamp|tipograf/i],
+ ["gli inviti e le conferme",/invit|conferm|iscri|partecip|elenco|rispost/i],
+ ["la sala",/sala|allest|palco|audio|video|microfon|proiett/i],
+ ["il kit di benvenuto",/kit|cartell|gadget|badge|benvenut/i],
+ ["il pranzo",/pranz|catering|past[oi]|buffet|men[uù]/i]];
+var PMRX=/project management|gestione (del )?progett|coordinament|direzione (di|del) progett|management|governo del progetto|gestione/i;
+var OFFRX=/^(l'|il |la )?(ufficio|reparto|direzione|personale|servizi generali|risorse umane|hr|acquisti|giulia|marco|team)\b/i;
+var GENRX=/\b(varie|eventuali|altro|altre|vari|misc|generale|generali)\b/i;
+var MSRX=/\b(inizio|fine|apertura|chiusura|milestone|scadenza|go.?live|giorno dell)/i;
+
+function advice(){
+  var ok=[],ko=[],wa=[];
+  var br=S.br,acts=ordered();
+  // deliverable con verbi
+  var verbBr=br.filter(function(b){return isVerb(b.t)});
+  if(verbBr.length)ko.push("«"+verbBr.map(function(b){return b.t}).join("», «")+"» "+(verbBr.length>1?"sembrano attività":"sembra un'attività")+": un deliverable si scrive con un sostantivo, come un prodotto da consegnare e far accettare (per esempio «Sala allestita», non «Allestire la sala»).");
+  else ok.push("I rami del primo livello sono scritti come prodotti (sostantivi): è una WBS per deliverable.");
+  // attività senza verbo
+  var nv=acts.filter(function(a){return !isVerb(a.t)});
+  if(nv.length){
+    var ms=nv.filter(function(a){return MSRX.test(a.t)});
+    ko.push("Non cominciano con un verbo all'infinito: «"+nv.map(function(a){return a.t}).join("», «")+"». Un'attività è lavoro da fare: «Prenotare la sala», non «Prenotazione sala».");
+    if(ms.length)wa.push("«"+ms.map(function(a){return a.t}).join("», «")+"»: se indica un momento (inizio, fine, apertura) è una milestone, ha durata zero. Il suo posto è nel Gantt, non nella WBS.");
+  } else ok.push("Tutte le attività cominciano con un verbo: si capisce che cosa c'è da fare.");
+  // ramo PM
+  if(br.some(function(b){return PMRX.test(b.t)}))ok.push("C'è il ramo del lavoro di gestione (Project management): coordinare e controllare è lavoro, e consuma tempo.");
+  else ko.push("Manca il ramo Project management. Passando dalla PBS alla WBS si aggiunge il lavoro che non produce un deliverable visibile ma serve: riunioni, controllo di tempi e budget, rapporti con lo sponsor.");
+  // uffici
+  var off=br.filter(function(b){return OFFRX.test(b.t)});
+  if(off.length)ko.push("«"+off.map(function(b){return b.t}).join("», «")+"»: è un ufficio o una persona. La WBS raggruppa per prodotto, non per chi fa il lavoro: per quello ci sono l'OBS e la RACI.");
+  // generici
+  var gen=br.concat(acts).filter(function(x){return GENRX.test(x.t)});
+  if(gen.length)wa.push("Voci generiche: «"+gen.map(function(x){return x.t}).join("», «")+"». «Varie» nasconde lavoro che nessuno stimerà né assegnerà: meglio dire che cosa c'è dentro.");
+  // rami vuoti / con un figlio / troppi
+  br.forEach(function(b){var n=(S.kids[b.id]||[]).length;
+    if(n===0)ko.push("Il ramo «"+b.t+"» è vuoto: un deliverable senza lavoro sotto non verrà prodotto. Mancano attività, oppure il ramo non serve.");
+    else if(n>6)wa.push("Il ramo «"+b.t+"» ha "+n+" attività: forse si può dividere in due deliverable, oppure qualche attività è troppo minuta.");
+  });
+  // doppioni
+  var seen={},dup=[];acts.forEach(function(a){var k=a.t.trim().toLowerCase();if(seen[k])dup.push(a.t);seen[k]=1});
+  if(dup.length)ko.push("Doppioni: «"+dup.join("», «")+"». Lo stesso lavoro contato due volte (regola del 100%).");
+  // temi del caso
+  var all=br.map(function(b){return b.t}).concat(acts.map(function(a){return a.t})).join(" | ");
+  var miss=THEMES.filter(function(t){return !t[1].test(all)}).map(function(t){return t[0]});
+  if(miss.length)ko.push("Il caso parla anche di "+miss.join(", ")+", ma nella vostra WBS non ne trovo traccia. Regola del 100%: ciò che non è nella WBS non verrà pianificato né fatto.");
+  else ok.push("Copre tutti i temi del caso: programma, inviti, sala, kit e pranzo.");
+  // numero
+  if(acts.length<6)wa.push("Avete "+acts.length+" attività: per stimare e assegnare il lavoro forse è poco dettagliata.");
+  else if(acts.length>22)wa.push("Avete "+acts.length+" attività: per un progetto di sei settimane è molto dettagliata. Il Gantt sarà lungo.");
+  else ok.push(acts.length+" attività: un livello di dettaglio adatto per stimare e assegnare il lavoro.");
+  return {ok:ok,ko:ko,wa:wa};
+}
+
+/* ================= SUGGERIMENTI DAL CASO (stima, RACI) ================= */
+var CASEHINTS=[
+ {rx:/approv/i,m:"team",d:2,r:4,txt:"Ferri approva di solito in 2 giorni: è un dato, lo esegue lui (per il team è un'attesa)."},
+ {rx:/slide|presentazion/i,m:"par",d:6,r:3,txt:"Slide: il dato dell'agenzia (4 giorni) non vale più. Meglio l'algoritmo con il dato di Luca: 3 presentazioni × 2 giorni = 6 giorni (magari con un po' di margine, visto che Luca è ottimista)."},
+ {rx:/grafic/i,m:"team",d:4,r:3,txt:"Grafica: Luca dice 3, ma chi lo conosce aggiunge un terzo. Giudizio esperto: 3 + 1 = 4 giorni (l'agenzia, 5, era un'altra situazione)."},
+ {rx:/stamp|tipograf/i,m:"team",d:5,r:3,txt:"Stampa: la tipografia consegna in 5 giorni. È un'attesa: non impegna Luca."},
+ {rx:/catering|pranz|past[oi]|buffet/i,m:"tre",d:6,r:2,txt:"Catering: il dato di John non vale (il fornitore è cambiato). Tre punti: (3 + 4×5 + 13) ÷ 6 = 6 giorni."},
+ {rx:/kit|cartell|gadget|badge/i,m:"par",d:4,r:1,txt:"Kit: il dato di John è fuorviante (35 kit, in due). Algoritmo: 40 × 0,5 ore = 20 ore, ÷ 5 ore al giorno = 4 giorni."},
+ {rx:/allest|palco|audio|video|microfon|proiett/i,m:"del",d:3,r:2,txt:"Allestimento: i 2 giorni di John valevano per una sala piccola. Delphi: gli esperti convergono su 3 giorni."},
+ {rx:/programm|relator|intervent|scalett|agenda/i,m:"ana",d:6,r:0,txt:"Programma: stesso lavoro di due anni fa, con tre relatori. Progetti precedenti (analogia): 6 giorni."},
+ {rx:/conferm|rispost|iscri/i,m:"team",d:10,r:1,txt:"Conferme: nell'invito si danno 10 giorni per rispondere."},
+ {rx:/invit/i,m:"team",d:2,r:1,txt:"Inviti: Giulia, che li ha già fatti, dice 2 giorni."},
+ {rx:/prenot.*sala|sala.*prenot/i,m:"team",d:1,r:2,txt:"La prenotazione della sala si fa in un giorno."},
+ {rx:PMRX,m:"tra",d:0,r:0,txt:"Il lavoro di gestione è trasversale: dura tutto il progetto."},
+ {rx:/riunion|coordin|controll|report|avanzament|budget|sponsor/i,m:"tra",d:0,r:0,txt:"Riunioni, controllo e report accompagnano tutto il progetto: attività trasversale."}];
+function hintFor(t){for(var i=0;i<CASEHINTS.length;i++)if(CASEHINTS[i].rx.test(t))return CASEHINTS[i];return null}
+
+/* ================= CALCOLO DEL PIANO ================= */
+function dur(id){var e=S.est[id];if(!e||e.m==="tra")return 0;return Math.max(1,Math.ceil(+e.d||0))}
+function isCross(id){var e=S.est[id];return e&&e.m==="tra"}
+function netActs(){return ordered().filter(function(a){return !isCross(a.id)})}
+function hasCycle(){
+  var ids=netActs().map(function(a){return a.id}),st={},bad=false;
+  function v(id){if(st[id]===1){bad=true;return}if(st[id]===2)return;st[id]=1;(S.dep[id]||[]).forEach(function(p){if(ids.indexOf(p)>=0)v(p)});st[id]=2}
+  ids.forEach(v);return bad;
+}
+function cycleInfo(){
+  var ids=netActs().map(function(a){return a.id}),pairs=[];
+  ids.forEach(function(a,i){ids.slice(i+1).forEach(function(b){if((S.dep[a]||[]).indexOf(b)>=0&&(S.dep[b]||[]).indexOf(a)>=0)pairs.push([a,b])})});
+  if(pairs.length)return {pairs:pairs,path:null};
+  var st={},stack=[],found=null;
+  function v(id){if(found)return;st[id]=1;stack.push(id);
+    (S.dep[id]||[]).forEach(function(p){if(found||ids.indexOf(p)<0)return;if(st[p]===1){found=stack.slice(stack.indexOf(p)).concat([p])}else if(!st[p])v(p)});
+    stack.pop();st[id]=2}
+  ids.forEach(function(id){if(!st[id])v(id)});
+  return found?{pairs:[],path:found}:null;
+}
+function cycleMsg(){
+  var c=cycleInfo();if(!c)return "";
+  function n(id){return "«"+esc(actById(id).t)+"»"}
+  if(c.pairs.length)return '<div class="conf"><h3>'+(c.pairs.length===1?"C’è un cerchio":"Ci sono "+c.pairs.length+" cerchi")+' nelle dipendenze</h3><ul>'+c.pairs.map(function(p){return '<li>'+n(p[0])+' parte dopo '+n(p[1])+', e '+n(p[1])+' parte dopo '+n(p[0])+'. Così nessuna delle due può partire: decidete quale viene prima e togliete l’altro legame.</li>'}).join("")+'</ul><p class="small" style="margin-top:8px">Le caselle da controllare sono bordate di rosso. Si toccano le attività che devono finire <b>prima</b>, non quelle che vengono dopo.</p></div>';
+  return '<div class="conf"><h3>C’è un cerchio nelle dipendenze</h3><p>'+c.path.map(n).join(" parte dopo ")+'. Così nessuna può partire: togliete uno di questi legami (bordati di rosso).</p></div>';
+}
+function cycleEdges(){var c=cycleInfo(),e={};if(!c)return e;
+  if(c.pairs.length)c.pairs.forEach(function(p){e[p[0]+">"+p[1]]=1;e[p[1]+">"+p[0]]=1});
+  else for(var i=0;i<c.path.length-1;i++)e[c.path[i]+">"+c.path[i+1]]=1;
+  return e}
+function schedule(extra){
+  var A=netActs(),ids=A.map(function(a){return a.id}),pred={},succ={};
+  ids.forEach(function(id){pred[id]=(S.dep[id]||[]).filter(function(p){return ids.indexOf(p)>=0});succ[id]=[]});
+  (extra||[]).forEach(function(e){if(pred[e[1]]&&ids.indexOf(e[0])>=0)pred[e[1]].push(e[0])});
+  ids.forEach(function(id){pred[id].forEach(function(p){succ[p].push(id)})});
+  var es={},ef={},guard=0;
+  while(Object.keys(ef).length<ids.length&&guard++<500){
+    ids.forEach(function(id){if(ef[id])return;if(pred[id].every(function(p){return ef[p]})){var s=1;pred[id].forEach(function(p){s=Math.max(s,ef[p]+1)});es[id]=s;ef[id]=s+dur(id)-1}});
+  }
+  if(Object.keys(ef).length<ids.length)return null;
+  var end=0;ids.forEach(function(id){end=Math.max(end,ef[id])});
+  var lf={},ls={},done={};guard=0;
+  while(Object.keys(lf).length<ids.length&&guard++<500){
+    ids.forEach(function(id){if(lf[id])return;if(succ[id].every(function(s){return lf[s]})){var f=end;succ[id].forEach(function(s){f=Math.min(f,ls[s]-1)});lf[id]=f;ls[id]=f-dur(id)+1}});
+  }
+  var fl={};ids.forEach(function(id){fl[id]=ls[id]-es[id]});
+  return {ids:ids,es:es,ef:ef,ls:ls,lf:lf,fl:fl,end:end,pred:pred};
+}
+function busy(id,r){var x=(S.raci[id]||{})[r];return (x==="R"||x==="A/R")&&!S.wait[id]&&!isCross(id)}
+function conflicts(sc){
+  var out=[];
+  ROLES.forEach(function(rn,r){
+    var mine=sc.ids.filter(function(id){return busy(id,r)});
+    for(var i=0;i<mine.length;i++)for(var j=i+1;j<mine.length;j++){
+      var a=mine[i],b=mine[j];
+      if(sc.es[a]<=sc.ef[b]&&sc.es[b]<=sc.ef[a])out.push({r:r,a:a,b:b,from:Math.max(sc.es[a],sc.es[b]),to:Math.min(sc.ef[a],sc.ef[b])});
+    }
+  });
+  out.sort(function(x,y){return x.from-y.from});return out;
+}
+function sig(){return JSON.stringify([ordered().map(function(a){return a.id}),S.est,S.dep,S.raci,S.wait])}
+function autoLevel(){
+  var guard=0,sc=schedule(S.extra),c;
+  while(sc&&(c=conflicts(sc)).length&&guard++<60){
+    var x=c[0],a=x.a,b=x.b;
+    // priorità: meno float, poi inizio prima
+    var first=(sc.fl[a]<sc.fl[b]||(sc.fl[a]===sc.fl[b]&&sc.es[a]<=sc.es[b]))?a:b,second=first===a?b:a;
+    S.extra.push([first,second]);sc=schedule(S.extra);
+  }
+}
+
+/* ================= GANTT ================= */
+function ganttHtml(sc,opts){
+  opts=opts||{};
+  var A=ordered(),full=(DEADLINE+1-sc.end)<=8,N=full?Math.max(DEADLINE+1,sc.end+1):Math.max(sc.end+2,8),DW=full?30:42,LW=230,inR=DEADLINE+1<=N;
+  var cols=LW+"px repeat("+N+",minmax("+DW+"px,1fr))";
+  // griglia: linea sottile ogni giorno, linea scura ogni settimana (5 giorni lavorativi)
+  var bg="repeating-linear-gradient(to right,transparent 0,transparent calc(100%/"+N+" - 1px),#ececec calc(100%/"+N+" - 1px),#ececec calc(100%/"+N+")),repeating-linear-gradient(to right,transparent 0,transparent calc(500%/"+N+" - 2px),#c6c6c6 calc(500%/"+N+" - 2px),#c6c6c6 calc(500%/"+N+"))";
+  function row(cls,label,inner){return '<div class="gr'+(cls?" "+cls:"")+'" style="grid-template-columns:'+cols+'"><div class="gl">'+label+'</div>'+inner+'</div>'}
+  function base(){return '<div class="track" style="grid-column:2/-1;background:'+bg+'"></div>'+(inR?'<div class="dl" style="grid-column:'+(DEADLINE+2)+'"></div>':'')}
+  var h='<div class="gwrap"><div style="min-width:'+(LW+N*DW)+'px">';
+  var wk="";for(var w=0;w*5<N;w++){var sp=Math.min(5,N-w*5);wk+='<div class="gh wk" style="grid-column:'+(w*5+2)+'/span '+sp+'">'+(sp<3?'S'+(w+1):'Settimana '+(w+1))+'</div>';}
+  h+=row("hd",'<span class="small">Giorni lavorativi</span>',wk);
+  var dd="";for(var d=1;d<=N;d++)dd+='<div class="gh" style="grid-column:'+(d+1)+'">'+d+'</div>';
+  h+=row("hd","",dd);
+  A.forEach(function(a){
+    var inner=base();
+    if(isCross(a.id))inner+='<div class="gb cross" style="grid-column:2/'+(sc.end+2)+'" title="trasversale">tutto il progetto</div>';
+    else{
+      var es=sc.es[a.id],ef=sc.ef[a.id],f=sc.fl[a.id],n=ef-es+1;
+      inner+='<div class="gb'+(f===0?' crit':'')+'" style="grid-column:'+(es+1)+'/'+(ef+2)+'" title="giorni '+es+'-'+ef+'">'+n+' gg</div>';
+      if(f>0)inner+='<div class="gf" style="grid-column:'+(ef+2)+'/'+(ef+2+f)+'" title="float '+f+' gg"></div>';
+    }
+    h+=row("",a.code+' '+esc(a.t)+(opts.who?'<small>'+esc(whoR(a.id))+'</small>':''),inner);
+  });
+  h+=row("","◆ Open day <small>giorno "+(DEADLINE+1)+(inR?"":", oltre la scala")+"</small>",base()+(inR?'<div class="ms" style="grid-column:'+(DEADLINE+2)+'">◆</div>':'<div class="gh" style="grid-column:'+(N-1)+'/span 2;text-align:right;font-weight:700;color:#B00F00;font-size:13px">→ giorno '+(DEADLINE+1)+'</div>'));
+  if(opts.load){
+    ROLES.forEach(function(rn,r){
+      var any=sc.ids.some(function(id){return busy(id,r)});if(!any)return;
+      var inner=base();
+      for(var d=1;d<=N;d++){var n=sc.ids.filter(function(id){return busy(id,r)&&sc.es[id]<=d&&sc.ef[id]>=d}).length;
+        if(n)inner+='<div class="load '+(n>1?'l2':'l1')+'" style="grid-column:'+(d+1)+'">'+n+'</div>'}
+      h+=row("","Carico: "+esc(rn),inner);
+    });
+  }
+  h+='</div></div><div class="legend"><span style="--c:var(--red)">critica</span><span style="--c:var(--blue)">non critica</span><span style="--c:#9db8ff">float</span><span style="--c:#8c8c8c">trasversale</span><span style="--c:#fde3df">giorno dell\'open day</span>'+(opts.load?'<span style="--c:var(--red)">sovraccarico (2 o più attività)</span>':'')+'</div>';
+  return h;
+}
+function whoR(id){var r=S.raci[id]||{},o=[];ROLES.forEach(function(rn,i){if(r[i]==="R"||r[i]==="A/R")o.push(rn)});return o.join(", ")||"nessun esecutore"}
+function critPath(sc){return ordered().filter(function(a){return sc.fl[a.id]===0&&!isCross(a.id)}).sort(function(x,y){return sc.es[x.id]-sc.es[y.id]}).map(function(a){return a.code+" "+a.t}).join(" → ")}
+function kpis(sc,ref){
+  var m=DEADLINE-sc.end;
+  return '<div class="kpi"><div><small>Fine del lavoro</small><b>giorno '+sc.end+'</b></div>'+
+    '<div class="'+(m<0?'bad':'good')+'"><small>'+(m<0?'Ritardo sui 30 giorni':'Margine sui 30 giorni')+'</small><b>'+Math.abs(m)+' gg</b></div>'+
+    (ref!=null?'<div class="'+(sc.end>ref?'bad':'good')+'"><small>Rispetto alle risorse infinite</small><b>'+(sc.end>ref?'+'+(sc.end-ref)+' gg':'invariata')+'</b></div>':'')+'</div>';
+}
+
+/* ================= UI comune ================= */
+function setNav(btns){
+  if(!btns||!btns.length){nav.hidden=true;navin.innerHTML="";return}
+  nav.hidden=false;
+  navin.innerHTML=btns.map(function(b,i){return '<button type="button" class="btn '+(b.primary?"primary ":"")+(b.grow?"grow":"")+'" data-i="'+i+'">'+b.label+'</button>'}).join("");
+  Array.prototype.forEach.call(navin.querySelectorAll("button"),function(el){el.onclick=function(){btns[+el.getAttribute("data-i")].on()}});
+}
+function go(i){S.step=i;S.maxStep=Math.max(S.maxStep||0,i);render();window.scrollTo(0,0);main.focus({preventScroll:true})}
+function std(next,check){ // navigazione standard
+  var b=[{label:"Indietro",on:function(){go(S.step-1)}}];
+  b.push({label:next||"Avanti",primary:true,grow:true,on:function(){var e=check?check():"";if(e){var el=$("navErr");if(el){el.textContent=e;el.scrollIntoView({block:"center"})}else alert(e)}else go(S.step+1)}});
+  setNav(b);
+}
+function head(){
+  var st=STEPS[S.step],n=STEPS.length-1,mx=S.maxStep||S.step;
+  var steps='<nav class="steps" aria-label="Tappe dell\'esercizio">'+STEPS.slice(1).map(function(x,k){var i=k+1,cl=i<S.step?"done":i===S.step?"cur":"todo";
+    return '<button type="button" class="st '+cl+'" data-go="'+i+'"'+(i>mx?' disabled':'')+(i===S.step?' aria-current="step"':'')+' aria-label="Passo '+i+': '+x.t+(i<S.step?', fatto':'')+'"><span class="dot">'+(cl==="done"?ic("check",18):ic(x.ic,19))+'</span>'+x.s+'</button>'}).join("")+'</nav>';
+  return steps+'<div class="progress"><span>Passo <b>'+S.step+'</b> di '+n+' · '+st.t+'</span><span>'+esc(S.team)+'</span></div><div class="bar" aria-hidden="true"><span style="width:'+Math.round(S.step/n*100)+'%"></span></div>';
+}
+var CASEIC=["book","stima","raci","dip","fin"];
+function casePart(i){return '<section class="case p'+(i+1)+'"><div class="ch"><span class="ci">'+ic(CASEIC[i],22)+'</span><p class="eyebrow">Il caso · '+P[i].t+'</p></div>'+caseHtml(i)+'</section>'}
+function talk(items){return '<section class="talk"><h3>'+ic("talk")+'Prima discutete in team</h3><ul>'+items.map(function(x){return '<li>'+x+'</li>'}).join("")+'</ul></section>'}
+function editor(list,ph){
+  return list.map(function(x,i){return '<div class="ed"><input data-i="'+i+'" value="'+esc(x.t)+'" placeholder="'+ph+'" aria-label="Voce '+(i+1)+'"><button type="button" class="x" data-del="'+i+'" aria-label="Elimina">✕</button></div>'}).join("")+
+   '<button type="button" class="btn small" id="addRow">+ Aggiungi una voce</button>';
+}
+function bindEditor(list,rerender){
+  each(".ed input",function(el){el.oninput=function(){list[+el.getAttribute("data-i")].t=el.value};
+    el.onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();var i=+el.getAttribute("data-i");if(i===list.length-1){list.push({id:uid(),t:""});rerender(true)}else{var nx=main.querySelector('.ed input[data-i="'+(i+1)+'"]');if(nx)nx.focus()}}}});
+  each("[data-del]",function(el){el.onclick=function(){list.splice(+el.getAttribute("data-del"),1);rerender()}});
+  $("addRow").onclick=function(){list.push({id:uid(),t:""});rerender(true)};
+}
+function keep(fn){var y=window.scrollY;fn();window.scrollTo(0,y)}
+
+/* ================= VISTE ================= */
+var V={};
+V.home=function(){
+  main.innerHTML='<div class="cover"><div><p class="eyebrow">Esercizio in team · 35-40 minuti</p><h1>L\'open day dei neoassunti</h1><p>Dalla PBS al Gantt a risorse finite, su un piccolo progetto vero.</p>'+
+   '<div class="kchips"><span>40 neoassunti</span><span>30 giorni</span><span>8.000 €</span><span>5 persone</span><span>12 attività circa</span></div></div>'+
+   '<svg viewBox="0 0 120 120" aria-hidden="true"><rect x="14" y="22" width="92" height="84" rx="12" fill="#fff"/><rect x="14" y="22" width="92" height="24" rx="12" fill="#E61400"/><rect x="14" y="36" width="92" height="10" fill="#E61400"/><rect x="34" y="12" width="8" height="20" rx="4" fill="#111"/><rect x="78" y="12" width="8" height="20" rx="4" fill="#111"/><text x="60" y="90" font-family="Arial" font-size="38" font-weight="700" text-anchor="middle" fill="#111">31</text><circle cx="8" cy="64" r="4" fill="#FFE9A8"/><circle cx="112" cy="58" r="5" fill="#FFE9A8"/><circle cx="104" cy="14" r="3" fill="#fff"/></svg></div>'+
+   '<div class="path" aria-label="Il percorso">'+STEPS.slice(1,-1).map(function(x){return '<span>'+x.s+'</span>'}).join('<i>→</i>')+'</div>'+casePart(0)+
+   '<div class="card"><h2>Come si lavora</h2><ul>'+
+   '<li>Un dispositivo per team. Il caso arriva a puntate: a ogni passo c\'è un pezzo nuovo.</li>'+
+   '<li>A ogni passo <b>prima discutete</b> (riquadro giallo) e trovate insieme una o più strade possibili. <b>Poi</b> scegliete e la mettete nell\'app (riquadro blu).</li>'+
+   '<li>Non c\'è un\'unica soluzione giusta. L\'app vi aiuta: codifica la WBS, fa i calcoli, disegna i Gantt, vi dà consigli e vi mostra una soluzione possibile da confrontare con la vostra.</li>'+
+   '<li>Il percorso: PBS → WBS → stima → RACI → dipendenze → Gantt a risorse infinite → Gantt a risorse finite.</li>'+
+   '<li>Il pulsante «Il caso», in alto, vi fa rileggere tutte le puntate.</li></ul></div>'+
+   (SAVED&&SAVED.step>0?'<div class="card" style="background:var(--ok-bg)"><h2>Su questo dispositivo c\'è un lavoro in corso</h2><p>Team «'+esc(SAVED.team||"senza nome")+'», arrivato al passo '+SAVED.step+' («'+STEPS[SAVED.step].t+'»).</p><p><button type="button" class="btn primary" id="resume">Riprendi da dove eravate</button> <button type="button" class="btn" id="fresh">Ricomincia da capo</button></p></div>':'')+
+   '<div class="field"><label for="team">Nome del team</label><input id="team" autocomplete="off" maxlength="40" value="'+esc(S.team)+'"></div>'+
+   '<p class="small">Il lavoro si salva da solo su questo dispositivo: se si chiude la pagina, si riprende da dove eravate.</p>';
+  if($("resume"))$("resume").onclick=function(){S=SAVED;SAVED=null;var mx=0;JSON.stringify(S).replace(/"k(\d+)"/g,function(m,d){mx=Math.max(mx,+d)});nid=mx;go(S.step)};
+  if($("fresh"))$("fresh").onclick=function(){if(confirm("Cancellare il lavoro salvato su questo dispositivo?")){wipe();SAVED=null;V.home()}};
+  setNav([{label:"Iniziamo",primary:true,grow:true,on:function(){var t=$("team").value.trim();if(!t){$("team").focus();$("team").setAttribute("aria-invalid","true");$("team").placeholder="Scrivete il nome del team";return}if(SAVED){wipe();SAVED=null}S.team=t;go(1)}}]);
+};
+V.pbs=function(focusLast){
+  main.innerHTML=head()+'<h1>La PBS: che cosa consegna il progetto?</h1>'+
+   talk(["Il giorno dell'open day, che cosa deve esistere ed essere pronto? Fate un elenco dei prodotti.","Per ciascuno: chi lo accetterà, chi dirà «va bene così»?","Ci sono più modi di raggruppare: discutete quale vi convince."])+
+   '<section class="app"><h2>'+ic("app")+'Nell\'app</h2><p class="hint">Scrivete i deliverable, uno per riga, con un sostantivo: «Sala allestita», non «Allestire la sala». Di solito 4-6 voci. Il lavoro di gestione per ora lasciatelo fuori: non è un prodotto.</p>'+
+   editor(S.pbs,"Es. Sala allestita")+'<p class="err" id="navErr" role="alert"></p></section>';
+  bindEditor(S.pbs,function(f){V.pbs(f)});
+  if(focusLast){var ins=main.querySelectorAll(".ed input");ins[ins.length-1].focus()}
+  std("Avanti",function(){return clean(S.pbs).length<2?"Scrivete almeno due deliverable.":""});
+};
+V.att=function(focusLast){
+  main.innerHTML=head()+'<h1>Le attività: che lavoro serve?</h1>'+
+   '<div class="card"><h3>La vostra PBS</h3><p>'+clean(S.pbs).map(function(p){return "«"+esc(p.t)+"»"}).join(" · ")+'</p></div>'+
+   talk(["Per ottenere ciascun prodotto, che cosa bisogna fare? Partite dai deliverable e chiedetevi: con quale lavoro si ottiene?","E il lavoro che non produce niente di visibile ma serve (coordinare, controllare)?","Che livello di dettaglio vi serve per stimare e assegnare il lavoro?"])+
+   '<section class="app"><h2>'+ic("app")+'Nell\'app</h2><p class="hint">Scrivete le attività, una per riga, con un verbo all\'infinito: «Prenotare la sala». L\'ordine non conta: al passo dopo le metterete nella WBS.</p>'+
+   editor(S.acts,"Es. Prenotare la sala")+'<p class="err" id="navErr" role="alert"></p></section>';
+  bindEditor(S.acts,function(f){V.att(f)});
+  if(focusLast){var ins=main.querySelectorAll(".ed input");ins[ins.length-1].focus()}
+  std("Avanti",function(){return clean(S.acts).length<4?"Scrivete almeno quattro attività.":""});
+};
+function brOptions(cur){return '<option value="">Da collocare…</option>'+S.br.map(function(b,i){return '<option value="'+b.id+'"'+(cur===b.id?" selected":"")+'>1.'+(i+1)+' '+esc(b.t)+'</option>'}).join("")}
+function moveAct(id,to){Object.keys(S.kids).forEach(function(k){S.kids[k]=S.kids[k].filter(function(x){return x!==id})});if(to)S.kids[to].push(id)}
+function orgChart(){
+  return '<div class="org" aria-label="Organigramma della WBS"><div class="org-root">1 · Open day dei neoassunti</div><div class="org-row">'+
+   S.br.map(function(b,i){return '<div class="org-col"><div class="org-br">1.'+(i+1)+' '+esc(b.t)+'</div>'+
+     (S.kids[b.id]||[]).map(function(id,j){return '<div class="org-act"><b>1.'+(i+1)+'.'+(j+1)+'</b> '+esc(actById(id).t)+'</div>'}).join("")+'</div>'}).join("")+'</div></div>';
+}
+V.org=function(){
+  syncBranches();
+  var un=unplaced();
+  var h=head()+'<h1>La WBS: mettete in ordine il lavoro</h1>'+
+   talk(["Sotto quale deliverable va ogni attività? Quale lavoro serve a produrre?","In che ordine le mettete dentro ogni ramo?","Passando dalla PBS alla WBS manca un ramo: quale?"])+
+   '<section class="app"><h2>'+ic("app")+'Nell\'app</h2><p class="hint">Per ogni attività scegliete il ramo; con ↑ ↓ cambiate l\'ordine. L\'app assegna i codici. Potete aggiungere rami che nella PBS non c\'erano.</p>';
+  if(un.length){h+='<section class="branch un"><div class="bh"><h3>Da collocare ('+un.length+')</h3></div>'+
+    un.map(function(a){return '<div class="arow"><span class="tx">'+esc(a.t)+'</span><select data-mv="'+a.id+'" aria-label="Ramo per '+esc(a.t)+'">'+brOptions("")+'</select></div>'}).join("")+'</section>'}
+  S.br.forEach(function(b,i){
+    var k=S.kids[b.id];
+    h+='<section class="branch"><div class="bh"><h3><span class="code">1.'+(i+1)+'</span>'+esc(b.t)+(b.pbs?'':' <span class="small">(aggiunto nella WBS)</span>')+'</h3>'+
+      '<button type="button" class="mini" data-bu="'+i+'" aria-label="Sposta il ramo in su"'+(i===0?" disabled":"")+'>↑</button><button type="button" class="mini" data-bd="'+i+'" aria-label="Sposta il ramo in giù"'+(i===S.br.length-1?" disabled":"")+'>↓</button>'+
+      (b.pbs?'':'<button type="button" class="mini" data-bx="'+b.id+'" aria-label="Elimina il ramo">✕</button>')+'</div>';
+    h+=k.length?k.map(function(id,j){return '<div class="arow"><span class="code">1.'+(i+1)+'.'+(j+1)+'</span><span class="tx">'+esc(actById(id).t)+'</span>'+
+      '<button type="button" class="mini" data-u="'+b.id+'|'+j+'" aria-label="Su"'+(j===0?" disabled":"")+'>↑</button><button type="button" class="mini" data-d="'+b.id+'|'+j+'" aria-label="Giù"'+(j===k.length-1?" disabled":"")+'>↓</button>'+
+      '<select data-mv="'+id+'" aria-label="Sposta in un altro ramo">'+brOptions(b.id)+'</select></div>'}).join(""):'<p class="empty">Nessuna attività</p>';
+    h+='</section>';
+  });
+  h+='<div class="ed" style="margin-top:12px"><input id="newBr" placeholder="Nuovo ramo, es. Project management" aria-label="Nome del nuovo ramo"><button type="button" class="btn small" id="addBr">+ Ramo</button></div>'+
+   '<h2 style="margin-top:18px">L\'organigramma della vostra WBS</h2>'+orgChart()+'<p class="err" id="navErr" role="alert"></p></section>';
+  main.innerHTML=h;
+  each("[data-mv]",function(el){el.onchange=function(){moveAct(el.getAttribute("data-mv"),el.value);keep(V.org)}});
+  each("[data-u],[data-d]",function(el){el.onclick=function(){var up=el.hasAttribute("data-u"),v=(el.getAttribute(up?"data-u":"data-d")).split("|"),k=S.kids[v[0]],j=+v[1],t=up?j-1:j+1;var x=k[j];k[j]=k[t];k[t]=x;keep(V.org)}});
+  each("[data-bu],[data-bd]",function(el){el.onclick=function(){var up=el.hasAttribute("data-bu"),j=+el.getAttribute(up?"data-bu":"data-bd"),t=up?j-1:j+1;var x=S.br[j];S.br[j]=S.br[t];S.br[t]=x;keep(V.org)}});
+  each("[data-bx]",function(el){el.onclick=function(){var id=el.getAttribute("data-bx");S.br=S.br.filter(function(b){return b.id!==id});delete S.kids[id];keep(V.org)}});
+  function addBr(){var v=$("newBr").value.trim();if(!v)return;var id=uid();S.br.push({id:id,t:v,pbs:false});S.kids[id]=[];keep(V.org)}
+  $("addBr").onclick=addBr;$("newBr").onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();addBr()}};
+  std("Chiedi consiglio",function(){return unplaced().length?"Ci sono ancora attività da collocare.":""});
+};
+function rows(list,cls,mark){return list.map(function(t){return '<li class="row '+cls+'"><span class="mark" aria-hidden="true">'+mark+'</span><div>'+t+'</div></li>'}).join("")}
+V.cons=function(){
+  var a=advice();
+  main.innerHTML=head()+'<h1>Come avete fatto la WBS</h1><p class="lead">Consigli sulla vostra WBS, non un voto. Potete tornare indietro a correggere, o andare avanti così.</p>'+
+   (a.ko.length?'<h2>Da rivedere</h2><ul class="list">'+rows(a.ko,"ko","!")+'</ul>':'')+
+   (a.wa.length?'<h2 style="margin-top:14px">Da valutare</h2><ul class="list">'+rows(a.wa,"wa","?")+'</ul>':'')+
+   (a.ok.length?'<h2 style="margin-top:14px">Va bene</h2><ul class="list">'+rows(a.ok,"ok","✓")+'</ul>':'')+
+   '<div class="card"><h2>Come si poteva fare in alternativa</h2>'+
+   '<div class="alt"><h3>Per deliverable: una WBS ragionevole per questo caso</h3><ul class="tree"><li>1.1 Programma e presentazioni<ul><li>1.1.1 Definire il programma con i manager relatori</li><li>1.1.2 Far approvare il programma allo sponsor</li><li>1.1.3 Preparare le slide dei relatori</li></ul></li><li>1.2 Inviti e iscrizioni<ul><li>1.2.1 Inviare gli inviti</li><li>1.2.2 Raccogliere le conferme</li></ul></li><li>1.3 Sala allestita<ul><li>1.3.1 Prenotare la sala</li><li>1.3.2 Allestire la sala e provare audio e video</li></ul></li><li>1.4 Kit di benvenuto<ul><li>1.4.1 Progettare la grafica di badge e cartelline</li><li>1.4.2 Stampare badge e cartelline in tipografia</li><li>1.4.3 Preparare i kit</li></ul></li><li>1.5 Pranzo<ul><li>1.5.1 Scegliere e prenotare il catering</li></ul></li><li>1.6 Project management<ul><li>1.6.1 Coordinare il progetto e controllare tempi e budget</li></ul></li></ul><p class="pc">I cinque rami sono i cinque prodotti che Ferri si aspetta (la PBS); passando alla WBS si aggiunge il ramo Project management. Le attività vengono dalla prima riunione: ognuno ha detto che cosa fa. In un progetto così piccolo un ramo può avere una sola attività.</p>'+
+   '<p class="pc"><b>Pro:</b> ogni ramo è un prodotto con qualcuno che lo accetta; niente si perde e niente è contato due volte. <b>Contro:</b> non dice subito chi fa il lavoro (per quello c\'è la RACI).</p></div>'+
+   '<div class="alt"><h3>Per fasi</h3><ul class="tree"><li>Prima dell\'open day<ul><li>Programma, inviti, sala, kit, catering…</li></ul></li><li>Il giorno dell\'open day<ul><li>Accogliere i neoassunti, condurre la giornata, servire il pranzo</li></ul></li><li>Dopo<ul><li>Raccogliere i giudizi, chiudere il progetto</li></ul></li></ul>'+
+   '<p class="pc"><b>Pro:</b> segue il calendario ed è intuitiva. <b>Contro:</b> nasconde i deliverable; un prodotto che attraversa le fasi (la sala) finisce spezzato in più rami. Va bene solo quando le fasi coincidono con consegne distinte.</p></div>'+
+   '<div class="alt"><h3>Per uffici</h3><ul class="tree"><li>Personale<ul><li>Inviti, conferme, kit</li></ul></li><li>Servizi generali<ul><li>Sala, catering</li></ul></li><li>Project manager<ul><li>Programma, coordinamento</li></ul></li></ul>'+
+   '<p class="pc"><b>Pro:</b> si vede subito chi fa che cosa. <b>Contro:</b> è un\'OBS travestita da WBS. Il lavoro tra un ufficio e l\'altro resta scoperto e nessuno risponde del prodotto intero. Sconsigliata.</p></div></div>'+
+   '<div class="card"><h2>Il vostro organigramma</h2>'+orgChart()+'</div>';
+  std("Avanti: la stima");
+};
+V.stima=function(){
+  var A=ordered();
+  main.innerHTML=head()+'<h1>La stima: quanto dura ogni attività?</h1>'+casePart(1)+
+   talk(["Per ogni informazione del caso: quale metodo di stima permette di usarla?","Dove non ci sono dati, come stimate? Siete d\'accordo tra voi?","Quali attività accompagnano tutto il progetto (trasversali)?"])+
+   '<section class="app"><h2>'+ic("app")+'Nell\'app</h2>'+
+   '<details class="card noprint"><summary><b>Calcolatrici</b> (tre punti, algoritmo, Delphi)</summary><div class="calc">'+
+   '<div class="box"><b>Tre punti (PERT)</b><label>Ottimistica <input id="po" inputmode="decimal"></label><label>Più probabile <input id="pm" inputmode="decimal"></label><label>Pessimistica <input id="pp" inputmode="decimal"></label><div class="res" id="pr">(O + 4M + P) ÷ 6 = …</div></div>'+
+   '<div class="box"><b>Algoritmo (parametrica)</b><label>Quantità <input id="aq" inputmode="decimal"></label><label>Ore per unità <input id="au" inputmode="decimal"></label><label>Ore al giorno <input id="ah" inputmode="decimal"></label><div class="res" id="ar">Q × ore ÷ ore al giorno = …</div></div>'+
+   '<div class="box"><b>Delphi (ultimo giro)</b><label>Esperto 1 <input id="d1" inputmode="decimal"></label><label>Esperto 2 <input id="d2" inputmode="decimal"></label><label>Esperto 3 <input id="d3" inputmode="decimal"></label><div class="res" id="dr">media = …</div></div>'+
+   '</div></details>'+
+   '<p class="hint">Per ogni attività scegliete il metodo e scrivete la durata in giorni lavorativi (i decimali si arrotondano per eccesso).</p>'+
+   A.map(function(a){var e=S.est[a.id]||{};return '<div class="est"><div class="tx"><span class="code">'+a.code+'</span>'+esc(a.t)+'</div><div class="ctl">'+
+     '<select data-m="'+a.id+'" aria-label="Metodo per '+esc(a.t)+'">'+METHODS.map(function(m){return '<option value="'+m[0]+'"'+(e.m===m[0]?" selected":"")+'>'+m[1]+'</option>'}).join("")+'</select>'+
+     '<input data-d="'+a.id+'" inputmode="decimal" placeholder="giorni" aria-label="Giorni per '+esc(a.t)+'" value="'+(e.m==="tra"?"":esc(e.d))+'"'+(e.m==="tra"?" disabled":"")+'></div><div class="sugwrap" data-s="'+a.id+'"></div></div>'}).join("")+
+   '<button type="button" class="btn small" id="cmp" style="margin-top:12px">Confronta con il caso</button><p class="err" id="navErr" role="alert"></p></section>';
+  function num(id){return parseFloat(($(id).value||"").replace(",","."))}
+  function calc(){var o=num("po"),m=num("pm"),p=num("pp");$("pr").textContent=(isFinite(o)&&isFinite(m)&&isFinite(p))?"("+o+" + 4×"+m+" + "+p+") ÷ 6 = "+(Math.round((o+4*m+p)/6*10)/10)+" giorni":"(O + 4M + P) ÷ 6 = …";
+    var q=num("aq"),u=num("au"),hh=num("ah");$("ar").textContent=(isFinite(q)&&isFinite(u)&&isFinite(hh)&&hh>0)?q+" × "+u+" = "+(q*u)+" ore ÷ "+hh+" = "+(Math.round(q*u/hh*10)/10)+" giorni":"Q × ore ÷ ore al giorno = …";
+    var ds=["d1","d2","d3"].map(num).filter(isFinite);$("dr").textContent=ds.length?"media = "+(Math.round(ds.reduce(function(s,x){return s+x},0)/ds.length*10)/10)+" giorni":"media = …"}
+  ["po","pm","pp","aq","au","ah","d1","d2","d3"].forEach(function(i){$(i).oninput=calc});
+  each("[data-m]",function(el){el.onchange=function(){var id=el.getAttribute("data-m");S.est[id]=S.est[id]||{};S.est[id].m=el.value;var inp=main.querySelector('[data-d="'+id+'"]');inp.disabled=el.value==="tra";if(el.value==="tra")inp.value=""}});
+  each("[data-d]",function(el){el.oninput=function(){var id=el.getAttribute("data-d");S.est[id]=S.est[id]||{};S.est[id].d=el.value.replace(",",".")}});
+  $("cmp").onclick=function(){A.forEach(function(a){var w=main.querySelector('[data-s="'+a.id+'"]'),h=hintFor(a.t),e=S.est[a.id]||{};
+    if(!h){w.innerHTML='<div class="sug">Il caso non dà dati su questa attività: decide il team.</div>';return}
+    var same=e.m===h.m&&(h.m==="tra"||Math.ceil(+e.d)===h.d);
+    w.innerHTML='<div class="sug">'+(same?"✓ In linea con il caso. ":"")+h.txt+'</div>'})};
+  std("Avanti: la RACI",function(){var bad=A.filter(function(a){var e=S.est[a.id];return !e||!e.m||(e.m!=="tra"&&!(+e.d>0))});return bad.length?"Manca metodo o durata per: "+bad.map(function(a){return a.code}).join(", ")+".":""});
+};
+var CYC=["","R","A","A/R","C","I"];
+V.raci=function(){
+  var A=ordered();
+  main.innerHTML=head()+'<h1>La RACI: chi fa che cosa</h1>'+casePart(2)+
+   talk(["Per ogni attività: chi la esegue (R)? Chi ne risponde (A)?","Chi va consultato prima (C) e chi solo informato dopo (I)?","Un\'attività con due A: che cosa succede quando qualcosa va storto?"])+
+   '<section class="app"><h2>'+ic("app")+'Nell\'app</h2><p class="hint">Toccate una cella per far scorrere le lettere: vuoto → R → A → A/R → C → I. R = esegue · A = risponde del risultato · A/R = entrambe · C = consultato · I = informato. Chi è R impegna il suo tempo: conterà nel Gantt a risorse finite.</p>'+
+   '<div class="tscroll"><table class="raci"><thead><tr><th>Attività</th>'+ROLES.map(function(r){return '<th><span class="mav" style="background:'+ROLECOL[ROLES.indexOf(r)]+'" aria-hidden="true">'+ROLEINI[ROLES.indexOf(r)]+'</span><br>'+r+'</th>'}).join("")+'</tr></thead><tbody>'+
+   A.map(function(a){var r=S.raci[a.id]||{};return '<tr><td class="al">'+a.code+' '+esc(a.t)+'</td>'+ROLES.map(function(rn,i){var v=r[i]||"";return '<td><button type="button" class="rc '+v.replace("/","")+'" data-a="'+a.id+'" data-r="'+i+'" aria-label="'+esc(a.t)+', '+rn+': '+(v||"vuoto")+'">'+v+'</button></td>'}).join("")+'</tr>'}).join("")+
+   '</tbody></table></div><button type="button" class="btn small" id="chk" style="margin-top:12px">Controlla la RACI</button><div id="raciOut" aria-live="polite"></div></section>';
+  each(".rc",function(el){el.onclick=function(){var a=el.getAttribute("data-a"),r=+el.getAttribute("data-r");S.raci[a]=S.raci[a]||{};var v=S.raci[a][r]||"";v=CYC[(CYC.indexOf(v)+1)%CYC.length];S.raci[a][r]=v;el.textContent=v;el.className="rc "+v.replace("/","");el.setAttribute("aria-label",actById(a).t+", "+ROLES[r]+": "+(v||"vuoto"))}});
+  $("chk").onclick=function(){
+    var ko=[],wa=[],ok=[];
+    A.forEach(function(a){var r=S.raci[a.id]||{},nA=0,nR=0,nC=0;ROLES.forEach(function(rn,i){var v=r[i];if(v==="A"||v==="A/R")nA++;if(v==="R"||v==="A/R")nR++;if(v==="C")nC++});
+      if(nA!==1)ko.push("«"+esc(a.t)+"»: "+(nA?nA+" A":"nessuna A")+". Ci vuole una e una sola persona che risponde del risultato.");
+      if(!nR&&!isCross(a.id))ko.push("«"+esc(a.t)+"»: nessuno la esegue (manca la R).");
+      if(nC>3)wa.push("«"+esc(a.t)+"»: "+nC+" consultati. Rallentano la decisione.");
+      var h=hintFor(a.t);if(h&&h.m!=="tra"&&!(r[h.r]==="R"||r[h.r]==="A/R"))wa.push("«"+esc(a.t)+"»: secondo il caso la esegue "+ROLES[h.r]+".");
+    });
+    var pmR=A.filter(function(a){var v=(S.raci[a.id]||{})[0];return v==="R"||v==="A/R"}).length;
+    if(pmR>A.length/2)wa.push("Voi (PM) eseguite "+pmR+" attività su "+A.length+": state facendo invece di dirigere?");
+    var nonPmA=A.filter(function(a){var r=S.raci[a.id]||{};return ROLES.some(function(rn,i){return i>0&&(r[i]==="A"||r[i]==="A/R")})}).length;
+    if(nonPmA)wa.push("In "+nonPmA+" righe l'A non è il PM. Si può fare, ma nelle slide del corso l'A è il PM, che risponde del risultato verso lo sponsor.");
+    if(!ko.length)ok.push("Ogni attività ha una sola A e almeno un esecutore.");
+    $("raciOut").innerHTML='<ul class="list" style="margin-top:12px">'+rows(ko,"ko","!")+rows(wa,"wa","?")+rows(ok,"ok","✓")+'</ul>'+
+     '<div class="card"><h3>Una soluzione possibile</h3><p>Voi (PM) siete A su tutte le attività, e A/R su programma e coordinamento. L\'approvazione la esegue il Direttore del personale (R). Luca è R su slide, grafica e stampa; Giulia su inviti, conferme e kit; Marco su sala e catering. Consultati (C): i manager sulle slide e sul programma, Giulia sulla grafica dei badge e sul catering (numeri ed esigenze alimentari). Informati (I): il Direttore sul catering e sul coordinamento; Marco e Luca sul programma; Marco sulle conferme.</p></div>';
+  };
+  std("Avanti: le dipendenze");
+};
+function dependsOn(x,y,seen){ // x dipende (anche indirettamente) da y?
+  seen=seen||{};if(seen[x])return false;seen[x]=1;
+  var p=(S.dep[x]||[]).filter(function(q){return netActs().some(function(a){return a.id===q})});
+  return p.indexOf(y)>=0||p.some(function(q){return dependsOn(q,y,seen)});
+}
+function chainFrom(x,y){ // percorso x -> ... -> y lungo le dipendenze (x dipende da ... da y)
+  var best=null;
+  (function walk(n,path,seen){if(best)return;if(n===y){best=path;return}if(seen[n])return;seen[n]=1;(S.dep[n]||[]).forEach(function(q){walk(q,path.concat([q]),seen)})})(x,[x],{});
+  return best||[x,y];
+}
+function succOf(id){return netActs().filter(function(a){return (S.dep[a.id]||[]).indexOf(id)>=0})}
+function levels(){
+  var A=netActs(),lv={},guard=0;
+  while(Object.keys(lv).length<A.length&&guard++<200){
+    A.forEach(function(a){if(a.id in lv)return;var p=(S.dep[a.id]||[]).filter(function(q){return A.some(function(b){return b.id===q})});
+      if(p.every(function(q){return q in lv}))lv[a.id]=p.length?1+Math.max.apply(null,p.map(function(q){return lv[q]})):0});
+  }
+  return lv; // le attività in un cerchio restano senza livello
+}
+V.dip=function(){
+  var A=netActs();
+  function n(id){return "«"+esc(actById(id).t)+"»"}
+  var h=head()+'<h1>Le dipendenze: in che ordine?</h1>'+casePart(3)+
+   talk(["Per ogni attività chiedetevi: <b>che cosa deve essere finito prima</b> di poterla cominciare?","Quali attività possono andare in parallelo?","Attenzione ai legami di troppo: se A precede B e B precede C, non serve dire che A precede C."])+
+   '<section class="app"><h2>'+ic("app")+'Nell\'app</h2><p class="hint">In ogni riquadro toccate solo le attività che devono <b>finire prima</b> (dipendenza fine–inizio). Se non ne toccate nessuna, l\'attività parte dal giorno 1. L\'app vi segnala le incongruenze con i colori:</p>'+
+   '<div class="keyl"><span style="background:var(--blue);border-color:var(--blue);color:#fff">✓ scelta</span><span style="background:#FFE9A8;border-color:#c99a00">＝ superflua</span><span style="border-style:dashed;color:#8a8a8a">↺ viene già dopo</span><span style="background:var(--red);border-color:var(--red);color:#fff">⚠ cerchio</span></div>';
+  A.forEach(function(a){
+    var d=(S.dep[a.id]||[]).filter(function(q){return A.some(function(b){return b.id===q})}),succ=succOf(a.id);
+    var cyc=d.filter(function(b){return dependsOn(b,a.id)});
+    var red=d.filter(function(b){return cyc.indexOf(b)<0&&d.some(function(q){return q!==b&&dependsOn(q,b)})});
+    var iso=!d.length&&!succ.length;
+    var cls=cyc.length?"r-bad":red.length?"r-warn":"r-ok";
+    h+='<div class="dep '+cls+'" id="dep-'+a.id+'"><div class="tx"><span class="code">'+a.code+'</span>'+esc(a.t)+' <span class="small">('+dur(a.id)+' gg)</span></div>'+
+      '<p class="small" style="margin:2px 0 6px">Che cosa deve essere finito prima?</p><div class="chips">'+
+      A.filter(function(b){return b.id!==a.id}).map(function(b){
+        var sel=d.indexOf(b.id)>=0,c="";
+        if(sel&&cyc.indexOf(b.id)>=0)c=" cyc";else if(sel&&red.indexOf(b.id)>=0)c=" red";else if(!sel&&dependsOn(b.id,a.id))c=" blk";
+        return '<button type="button" class="chip'+c+'" data-a="'+a.id+'" data-p="'+b.id+'" aria-pressed="'+sel+'">'+b.code+' '+esc(b.t)+'</button>'}).join("")+'</div>'+
+      '<p class="rel">'+(d.length?'Parte dopo: '+d.map(n).join(", "):'Parte subito (giorno 1)')+(succ.length?' · Vengono dopo: '+succ.map(function(x){return n(x.id)}).join(", "):'')+'</p>';
+    // consigli della riga
+    if(S.depMsg&&S.depMsg.a===a.id)h+=S.depMsg.h;
+    cyc.forEach(function(b){
+      var ch=chainFrom(b,a.id);
+      h+='<div class="msg bad"><b>Cerchio.</b> Avete detto che '+n(a.id)+' parte dopo '+n(b)+'. Ma '+ch.map(n).join(" parte dopo ")+'. Così nessuna delle due può mai cominciare.<br>Che cosa viene prima?'+
+        (ch.length===2?'<br><button type="button" class="btn small" data-keep="'+b+'|'+a.id+'">Prima '+n(b)+'</button><button type="button" class="btn small" data-keep="'+a.id+'|'+b+'">Prima '+n(a.id)+'</button>':
+        '<br><button type="button" class="btn small" data-un="'+a.id+'|'+b+'">Togli: '+n(a.id)+' dopo '+n(b)+'</button>')+'</div>';
+    });
+    red.forEach(function(b){
+      var via=d.filter(function(q){return q!==b&&dependsOn(q,b)})[0];
+      h+='<div class="msg warn"><b>Legame superfluo.</b> '+n(b)+' viene già prima di '+n(via)+', che viene prima di '+n(a.id)+'. Non è un errore, ma si può togliere: il reticolo resta più leggibile.<br><button type="button" class="btn small" data-un="'+a.id+'|'+b+'">Togli il legame superfluo</button></div>';
+    });
+    h+='</div>';
+  });
+  // il reticolo in sintesi
+  var lv=levels(),max=-1;Object.keys(lv).forEach(function(k){max=Math.max(max,lv[k])});
+  var stuck=A.filter(function(a){return !(a.id in lv)});
+  h+='<div class="card"><h2>Il vostro ordine, in sintesi</h2><p class="small">Ogni colonna parte quando sono finite quelle a sinistra da cui dipende.</p><div class="flow">';
+  for(var L=0;L<=max;L++){if(L)h+='<span class="arr" aria-hidden="true">→</span>';
+    h+='<div class="lv"><h4>'+(L===0?'Partono subito':'Poi ('+(L+1)+'°)')+'</h4>'+A.filter(function(a){return lv[a.id]===L}).map(function(a){var iso=!(S.dep[a.id]||[]).length&&!succOf(a.id).length;return '<div'+(iso?' style="background:var(--warn-bg)" title="non legata a nessuna attività"':'')+'>'+a.code+' '+esc(a.t)+(iso?' <span class="small">(isolata)</span>':'')+'</div>'}).join("")+'</div>'}
+  if(stuck.length)h+='<span class="arr">·</span><div class="lv" style="border:2px solid var(--red)"><h4 style="color:#B00F00">Bloccate in un cerchio</h4>'+stuck.map(function(a){return '<div>'+a.code+' '+esc(a.t)+'</div>'}).join("")+'</div>';
+  h+='</div></div>'+
+   '<details class="card"><summary><b>Una soluzione possibile</b> (per il caso dell\'open day)</summary><p>Programma → Approvazione → Inviti → Conferme → Catering (è il percorso critico). Approvazione → Slide. Approvazione → Grafica → Stampa → Kit. Prenotazione della sala e Approvazione → Allestimento. La prenotazione della sala parte subito.</p></details>'+
+   '<p class="err" id="navErr" role="alert"></p></section>';
+  main.innerHTML=h;
+  function rerender(){var y=window.scrollY;V.dip();window.scrollTo(0,y)}
+  each(".chip",function(el){el.onclick=function(){
+    var a=el.getAttribute("data-a"),p=el.getAttribute("data-p");S.dep[a]=S.dep[a]||[];var i=S.dep[a].indexOf(p);S.depMsg=null;
+    if(i>=0){S.dep[a].splice(i,1);rerender();return}
+    if(dependsOn(p,a)){ // creerebbe un cerchio: non lo aggiungo, spiego
+      var ch=chainFrom(p,a),direct=ch.length===2;
+      S.depMsg={a:a,h:'<div class="msg info"><b>Non si può: '+n(p)+' viene già dopo '+n(a)+'</b> ('+ch.map(n).join(" parte dopo ")+'). Se la metteste anche prima, le due attività si aspetterebbero a vicenda.'+
+        (direct?'<br>Volete invertire l\'ordine?<br><button type="button" class="btn small" data-keep="'+p+'|'+a+'">Sì: prima '+n(p)+', poi '+n(a)+'</button><button type="button" class="btn small" data-close-msg="1">No, va bene così</button>':'<br>Se l\'ordine è sbagliato, togliete prima uno dei legami di questa catena.')+'</div>'};
+      rerender();return;
+    }
+    S.dep[a].push(p);rerender();
+  }});
+  // "Prima X": X diventa predecessore di Y, si toglie il legame opposto
+  each("[data-keep]",function(el){el.onclick=function(){var v=el.getAttribute("data-keep").split("|"),first=v[0],second=v[1];
+    S.dep[first]=(S.dep[first]||[]).filter(function(q){return q!==second});S.dep[second]=S.dep[second]||[];if(S.dep[second].indexOf(first)<0)S.dep[second].push(first);S.depMsg=null;rerender()}});
+  each("[data-un]",function(el){el.onclick=function(){var v=el.getAttribute("data-un").split("|");S.dep[v[0]]=(S.dep[v[0]]||[]).filter(function(q){return q!==v[1]});S.depMsg=null;rerender()}});
+  each("[data-close-msg]",function(el){el.onclick=function(){S.depMsg=null;rerender()}});
+  std("Disegna il Gantt",function(){if(hasCycle()){var f=main.querySelector(".dep.r-bad");if(f)f.scrollIntoView({block:"center"});return "Ci sono attività bloccate in un cerchio (riquadri rossi)."}return ""});
+};
+V.gantt=function(){
+  var sc=schedule([]);
+  var fl=ordered().filter(function(a){return !isCross(a.id)&&sc.fl[a.id]>0}).map(function(a){return "«"+esc(a.t)+"» "+sc.fl[a.id]+" gg"});
+  main.innerHTML=head()+'<h1>Il Gantt a risorse infinite</h1><p class="lead">Calcolato con le vostre stime e le vostre dipendenze, come se ogni persona fosse sempre disponibile.</p>'+
+   kpis(sc)+ganttHtml(sc,{who:true})+
+   '<div class="card"><h3>Percorso critico</h3><p>'+esc(critPath(sc))+'</p>'+(fl.length?'<h3>Float (quanto può slittare senza spostare la fine)</h3><p>'+fl.join(" · ")+'</p>':'')+'</div>'+
+   talk(["Rientrate nei 30 giorni? Con quale margine?","Se un\'attività critica slitta di 3 giorni, che cosa succede? E una con float?",(sc.end>DEADLINE?"Non rientrate: dove si può accorciare? (Tornate alle stime o alle dipendenze.)":"Che cosa vi dice il Gantt che la WBS non diceva?")]);
+  std("Avanti: le risorse");
+};
+V.fin=function(){
+  var A=netActs();
+  if(!("waitInit" in S)){S.waitInit=1;A.forEach(function(a){if(/conferm|attes|rispost|stamp|tipograf|approv/i.test(a.t))S.wait[a.id]=true})}
+  var s=sig();if(s!==S.extraSig){S.extra=[];S.extraSig=s}
+  var base=schedule([]);
+  var sc=schedule(S.extra)||base,c=conflicts(sc);
+  var h=head()+'<h1>Il Gantt a risorse finite</h1>'+casePart(4)+
+   talk(["Dove la stessa persona ha due attività negli stessi giorni?","Quale far passare prima? Che cosa costa ciascuna scelta?","Ci sono alternative (un\'altra persona, un\'attività spezzata)? Che cosa chiedereste allo sponsor?"])+
+   '<section class="app"><h2>'+ic("app")+'Nell\'app</h2>'+
+   '<details class="card"><summary><b>Quali attività sono un\'attesa?</b> (non impegnano chi le segue)</summary>'+A.map(function(a){return '<label class="waitrow"><input type="checkbox" data-w="'+a.id+'"'+(S.wait[a.id]?" checked":"")+'> '+a.code+' '+esc(a.t)+' <span class="small">· '+esc(whoR(a.id))+'</span></label>'}).join("")+'</details>';
+  if(c.length){
+    var x=c[0],a=actById(x.a),b=actById(x.b);
+    function lab(id){return sc.fl[id]===0?"critica":"float "+sc.fl[id]+" gg"}
+    h+='<div class="conf" role="alert"><h3>Sovraccarico: '+ROLES[x.r]+'</h3><p>Ha due attività negli stessi giorni ('+x.from+(x.to>x.from?"-"+x.to:"")+'): «'+esc(a.t)+'» ('+lab(x.a)+') e «'+esc(b.t)+'» ('+lab(x.b)+'). Una per volta: quale fa prima?</p>'+
+      '<div class="opts"><button type="button" class="btn" data-first="'+x.a+'|'+x.b+'">Prima «'+esc(a.t)+'»</button><button type="button" class="btn" data-first="'+x.b+'|'+x.a+'">Prima «'+esc(b.t)+'»</button></div>'+
+      (c.length>1?'<p class="small" style="margin-top:8px">Dopo questo ci sono altri '+(c.length-1)+' sovraccarichi.</p>':'')+'</div>'+
+      '<p style="margin-top:10px"><button type="button" class="btn small" id="auto">Risolvi tutto in automatico (prima le critiche)</button></p>';
+  } else {
+    h+='<div class="card" style="background:var(--ok-bg)"><h3>Nessun sovraccarico</h3><p>'+(S.extra.length?'Il piano rispetta le risorse disponibili.':'Con le vostre assegnazioni nessuno ha due attività insieme.')+'</p>'+
+      (sc.end>base.end?'<p>Il livellamento ha allungato il progetto di <b>'+(sc.end-base.end)+' giorni</b>. Quando si sceglie chi va prima, dare la precedenza all\'attività critica e far slittare quella con float spesso non sposta la fine.</p>':(S.extra.length?'<p>La fine non si è spostata: le attività che avete fatto slittare avevano abbastanza float.</p>':''))+'</div>';
+  }
+  h+=kpis(sc,base.end)+ganttHtml(sc,{who:true,load:true})+
+   (S.extra.length?'<p><button type="button" class="btn small" id="reset">Rifate il livellamento da capo</button></p>':'')+
+   '<details class="card"><summary><b>Una soluzione possibile</b></summary><p>Con la soluzione possibile delle puntate precedenti, Luca dovrebbe fare le slide (6 giorni) e la grafica (4 giorni) negli stessi giorni, dal 9. Le slide hanno 12 giorni di float; la grafica solo 5, perché dopo vengono stampa e kit. Prima la grafica, poi le slide: la fine resta al giorno 26. Prima le slide: grafica, stampa e kit slittano di 6 giorni e si finisce al giorno 27. In alternativa, il grafico esterno di Sara (2.000 euro) eliminerebbe il conflitto.</p></details></section>';
+  main.innerHTML=h;
+  each("[data-w]",function(el){el.onchange=function(){S.wait[el.getAttribute("data-w")]=el.checked;keep(V.fin)}});
+  each("[data-first]",function(el){el.onclick=function(){var v=el.getAttribute("data-first").split("|");S.extra.push(v);keep(V.fin)}});
+  if($("auto"))$("auto").onclick=function(){autoLevel();keep(V.fin)};
+  if($("reset"))$("reset").onclick=function(){S.extra=[];keep(V.fin)};
+  std("Riepilogo",function(){var s2=schedule(S.extra);return s2&&conflicts(s2).length?"Ci sono ancora sovraccarichi da risolvere.":""});
+};
+V.end=function(){
+  var base=schedule([]),sc=schedule(S.extra)||base,A=ordered();
+  var mname={};METHODS.forEach(function(m){mname[m[0]]=m[1]});
+  main.innerHTML='<p class="eyebrow">Riepilogo da proiettare in plenaria</p><h1>'+esc(S.team||"Il vostro team")+': il piano dell\'open day</h1>'+
+   '<p class="lead">Fine con risorse infinite: giorno '+base.end+' · con risorse finite: giorno '+sc.end+' · percorso critico: '+esc(critPath(sc))+'</p>'+kpis(sc,base.end)+
+   '<div class="card"><h2>La WBS</h2>'+orgChart()+'</div>'+
+   '<div class="card"><h2>Stime, esecutori e date</h2><div class="tscroll"><table class="sum"><thead><tr><th>Codice</th><th>Attività</th><th>Metodo</th><th>Giorni</th><th>Esegue</th><th>Dopo</th><th>Giorni (risorse finite)</th></tr></thead><tbody>'+
+   A.map(function(a){var e=S.est[a.id]||{},cr=isCross(a.id);return '<tr><td>'+a.code+'</td><td>'+esc(a.t)+'</td><td>'+(mname[e.m]||"")+'</td><td>'+(cr?"—":dur(a.id))+'</td><td>'+esc(whoR(a.id))+'</td><td>'+(cr?"—":(S.dep[a.id]||[]).map(codeOf).join(", "))+'</td><td>'+(cr?"tutto il progetto":sc.es[a.id]+"–"+sc.ef[a.id])+'</td></tr>'}).join("")+
+   '</tbody></table></div></div>'+
+   '<div class="card"><h2>Gantt a risorse finite</h2>'+ganttHtml(sc,{who:true})+'</div>'+
+   talk(["Che cosa avete aggiunto passando dalla PBS alla WBS? Perché?","Quale metodo di stima usereste per un\'attività mai fatta prima, senza dati?","Perché il ritardo di un\'attività con float non sposta la fine, e quello di un\'attività critica sì?","Il livellamento vi ha allungato il progetto? Che cosa avreste potuto chiedere allo sponsor?"]);
+  setNav([{label:"Indietro",on:function(){go(S.step-1)}},{label:"Stampa",on:function(){window.print()}},{label:"Nuovo team",primary:true,grow:true,on:function(){if(confirm("Ricominciare da capo con un nuovo team? Il lavoro di questo team verrà cancellato da questo dispositivo.")){wipe();location.reload()}}}]);
+};
+
+var KEY="pm-openday-v1";
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{var t=localStorage.getItem(KEY);if(!t)return null;var o=JSON.parse(t);return o&&o.pbs&&o.acts?o:null}catch(e){return null}}
+function wipe(){try{localStorage.removeItem(KEY)}catch(e){}}
+var saveT=null;function saveSoon(){clearTimeout(saveT);saveT=setTimeout(save,400)}
+function render(){V[STEPS[S.step].k]();each(".st[data-go]",function(el){el.onclick=function(){go(+el.getAttribute("data-go"))}});if(S.step>0)save()}
+$("btnCase").onclick=function(){var upto=STEPS[S.step].p;$("caseBody").innerHTML=P.slice(0,upto+1).map(function(p,i){return casePart(i)}).join("");$("dlgCase").showModal()};
+document.querySelectorAll("[data-close]").forEach(function(b){b.onclick=function(){b.closest("dialog").close()}});
+main.addEventListener("input",saveSoon);main.addEventListener("change",saveSoon);
+window.addEventListener("pagehide",function(){if(S.step>0)save()});
+var SAVED=load();
+render();
+})();
+</script>
+</body>
+</html>

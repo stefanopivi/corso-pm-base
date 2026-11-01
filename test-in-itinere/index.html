@@ -190,19 +190,27 @@ function compact(q, a) {   // forma sintetica della risposta da inviare
 /* ---------- invio e raccolta ---------- */
 const QKEY = 'pmt:queue', LKEY = () => 'pmt:local:' + S.edition;
 function enqueue(payload) { const q = LS.get(QKEY, []); q.push(payload); LS.set(QKEY, q); }
-async function flush() {
-  const q = LS.get(QKEY, []);
-  if (!q.length) return updStatus();
-  if (!CONFIG.endpoint) { updStatus(); return; }
-  const rest = [];
-  for (const p of q) {
-    try {
-      const r = await fetch(CONFIG.endpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p) });
-      const j = await r.json();
-      if (!j || !j.ok) rest.push(p);
-    } catch (e) { rest.push(p); }
-  }
-  LS.set(QKEY, rest); updStatus();
+const subKey = (p) => [p.edition, p.pid, p.test, p.attempt].join('|');
+let FLUSHING = false, AGAIN = false;
+async function flush() {   // un invio alla volta; toglie dalla coda solo ciò che il servizio ha confermato
+  if (FLUSHING) { AGAIN = true; return; }
+  FLUSHING = true;
+  try {
+    do {
+      AGAIN = false;
+      const q = LS.get(QKEY, []);
+      if (!q.length || !CONFIG.endpoint) break;
+      const sent = [];
+      for (const p of q) {
+        try {
+          const r = await fetch(CONFIG.endpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p) });
+          const j = await r.json();
+          if (j && j.ok) sent.push(subKey(p));
+        } catch (e) { /* resta in coda */ }
+      }
+      LS.set(QKEY, LS.get(QKEY, []).filter((p) => !sent.includes(subKey(p))));
+    } while (AGAIN);
+  } finally { FLUSHING = false; updStatus(); }
 }
 function updStatus() { const el = document.getElementById('sendstat'); if (!el) return; const n = LS.get(QKEY, []).length; el.textContent = CONFIG.endpoint ? (n ? n + ' test in attesa di invio: riprova più tardi con la connessione attiva.' : 'Risposte inviate.') : 'Modalità prova: le risposte restano su questo dispositivo.'; }
 function submit() {
@@ -377,11 +385,12 @@ function vStats() {
   const subs = STATS.filter((s) => s.test === t.key && s.attempt === 1);
   const per = t.q.map((q) => { let n = 0, ok = 0; subs.forEach((s) => { const r = s.answers.find((a) => a.q === q.id); if (r) { n++; ok += r.ok; } }); return { q, n, ok, p: n ? ok / n : null }; });
   const avg = subs.length ? subs.reduce((a, s) => a + s.score / s.n, 0) / subs.length : null;
-  const worst = [...per].filter((x) => x.n).sort((a, b) => a.p - b.p).slice(0, 3);
+  const worst = [...per].filter((x) => x.n && x.p < 1).sort((a, b) => a.p - b.p).slice(0, 3);
+  const noWrong = !worst.length && per.some((x) => x.n);
   $('#app').innerHTML = `<p class="eyebrow">Solo per il docente</p><h1>Giuste e sbagliate</h1>
   <div class="seg" role="group" style="flex-wrap:wrap">${TESTS.map((x, i) => `<button aria-pressed="${i === S.statsTest}" data-t="${i}" style="min-width:48px">T${i + 1}</button>`).join('')}</div>
   <div class="card"><b>${esc(t.title)}</b><br>Partecipanti (prima consegna): <b>${subs.length}</b>${avg === null ? '' : ' · punteggio medio: <b>' + Math.round(avg * 100) + '%</b>'}</div>
-  ${worst.length ? `<div class="card"><b>Da riprendere in aula</b><ol style="margin:8px 0 0;padding-left:20px">${worst.map((w) => `<li>${w.q.id}: ${esc(w.q.text)} <span class="badge">${Math.round(w.p * 100)}% giuste</span></li>`).join('')}</ol></div>` : '<p class="small">Nessuna risposta raccolta per questo test.</p>'}
+  ${worst.length ? `<div class="card"><b>Da riprendere in aula (le più sbagliate, al massimo tre)</b><ol style="margin:8px 0 0;padding-left:20px">${worst.map((w) => `<li>${w.q.id}: ${esc(w.q.text)} <span class="badge">${Math.round(w.p * 100)}% giuste</span></li>`).join('')}</ol></div>` : (noWrong ? '<div class="card"><b>Da riprendere in aula</b><br>Nessuna domanda sbagliata: tutti hanno risposto giusto a tutto.</div>' : '<p class="small">Nessuna risposta raccolta per questo test.</p>')}
   <div class="bars">${per.map((x) => `<div class="brow"><span>${x.q.id} · ${esc(x.q.text.length > 90 ? x.q.text.slice(0, 90) + '…' : x.q.text)}</span><b>${x.n ? Math.round(x.p * 100) + '%' : '—'}</b><div class="bb ${x.p !== null && x.p < .5 ? 'low' : ''}"><span style="width:${x.p === null ? 0 : x.p * 100}%"></span></div></div>`).join('')}</div>
   <p class="small">${CONFIG.endpoint ? 'Dati raccolti per questa edizione.' : 'Modalità prova: sono mostrati solo i test fatti su questo dispositivo.'}</p>
   <div class="stack"><button class="btn" id="csv">Scarica i dati (CSV)</button></div>`;

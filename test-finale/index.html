@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Test finale — Project Management base</title>
+<meta name="description" content="Test finale, non valutativo, del corso di Project Management base.">
+<meta name="theme-color" content="#0555FA">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230555FA'/%3E%3Ctext x='50' y='68' font-size='56' font-family='Arial' font-weight='700' text-anchor='middle' fill='white'%3EPM%3C/text%3E%3C/svg%3E">
+<style>
+:root{--blue:#0555FA;--red:#E61400;--green:#008556;--ink:#111;--muted:#555;--line:#8c8c8c;--grey:#C6C6C6;--soft:#F2F3F5;--ok-bg:#E6F4EE;--ko-bg:#FDEBE8}
+*{box-sizing:border-box}
+html{color-scheme:light;-webkit-text-size-adjust:100%}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#fff;line-height:1.4}
+button,input{font-family:inherit}
+.top{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--grey);border-top:4px solid var(--blue)}
+.top-in{max-width:640px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-weight:700;font-size:15px}.brand small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+main{max-width:640px;margin:0 auto;padding:16px 16px 120px}
+h1{margin:0;font-size:28px;line-height:1.15}h2{margin:0;font-size:18px}
+.eyebrow{margin:0 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.lead{margin:6px 0 16px;font-size:18px;color:var(--muted)}
+[tabindex="-1"]:focus{outline:none}
+.btn{min-height:48px;padding:0 18px;border-radius:12px;border:2px solid var(--ink);background:#fff;color:var(--ink);font-size:16px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.primary:hover{background:#0446d4}
+.btn.small{min-height:40px;padding:0 14px;font-size:14px}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:focus-visible,.opt:focus-visible,.cell:focus-visible,.seg button:focus-visible,.tile:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.stack{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.card{background:var(--soft);border-radius:16px;padding:18px 18px 16px;margin-top:14px}
+.progress{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--muted)}.progress b{color:var(--ink)}
+.bar{height:8px;background:var(--grey);border-radius:99px;overflow:hidden;margin:8px 0 14px}.bar>span{display:block;height:100%;background:var(--blue);border-radius:99px;transition:width .25s}
+.item{background:var(--soft);border-radius:16px;padding:20px 18px}
+.qtype{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 6px}
+.qtext{font-size:19px;font-weight:700;margin:0 0 12px;line-height:1.3}
+.hint{font-size:13px;color:var(--muted);margin:0 0 10px}
+.opts{display:grid;gap:8px}
+.opt{min-height:52px;padding:10px 12px;border:2px solid var(--line);background:#fff;border-radius:12px;font-size:16px;font-weight:700;color:var(--ink);cursor:pointer;text-align:left;display:block;width:100%;touch-action:manipulation}
+.opt:hover{border-color:var(--ink)}
+.opt[aria-pressed="true"],.opt[aria-checked="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.opt[aria-pressed="true"]::before,.opt[aria-checked="true"]::before{content:"✓ "}
+.opt.vf{text-align:center}
+.mrow{background:#fff;border:2px solid var(--grey);border-radius:12px;padding:12px;margin-bottom:10px}
+.mrow p{margin:0 0 8px;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips .opt{width:auto;min-height:44px;padding:8px 12px;font-size:15px;text-align:center}
+.ord{list-style:none;margin:0;padding:0}
+.ord li{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--line);border-radius:12px;padding:6px 8px;margin-bottom:8px}
+.ord .n{width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none}
+.ord .t{flex:1;font-weight:700}
+.ord button{width:44px;height:44px;border:2px solid var(--line);background:#fff;border-radius:10px;font-size:18px;cursor:pointer;color:var(--ink)}
+.ord button:disabled{opacity:.3}
+.frow{margin-bottom:12px}.frow label{display:block;font-weight:700;margin-bottom:6px}
+.frow input{width:100%;min-height:52px;font-size:20px;padding:0 12px;border:2px solid var(--line);border-radius:12px;background:#fff}
+table.t{width:100%;border-collapse:collapse;margin:0 0 14px;font-size:14px;background:#fff}
+table.t th,table.t td{border:1px solid var(--grey);padding:6px 8px;text-align:left}table.t th{background:var(--ink);color:#fff}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:5;background:#fff;border-top:1px solid var(--grey);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.nav-in{max-width:640px;margin:0 auto;display:flex;gap:8px}.nav .grow{flex:1}.nav[hidden]{display:none}
+.tile{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;background:var(--soft);border:2px solid transparent;border-radius:14px;padding:12px;margin-bottom:8px;cursor:pointer;min-height:64px;font-size:16px;color:var(--ink)}
+.tile:hover{border-color:var(--ink)}
+.tile .no{width:44px;height:44px;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:18px}
+.tile b{display:block}.tile small{color:var(--muted);font-size:13px}
+.tile .st{font-size:13px;font-weight:700}.tile.done .no{background:var(--green)}
+.field{display:flex;flex-direction:column;gap:6px;margin-top:12px}.field label{font-weight:700;font-size:14px}
+.field input{min-height:52px;font-size:18px;padding:0 12px;border:2px solid var(--line);border-radius:12px;width:100%}
+.hero{background:var(--ink);color:#fff;border-radius:16px;padding:22px 18px;text-align:center}.hero .eyebrow{color:#d9d9d9}
+.score{font-size:64px;font-weight:700;line-height:1}.score span{font-size:28px;font-weight:400;color:#d9d9d9}
+.hero p{margin:10px 0 0;font-size:17px}
+.seg{display:flex;gap:6px;margin:18px 0 10px}
+.seg button{flex:1;min-height:44px;border:2px solid var(--line);background:#fff;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.list{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:12px;border-radius:12px;margin-bottom:8px;border:1px solid transparent}
+.row.ok{background:var(--ok-bg);border-color:#b9dfce}.row.ko{background:var(--ko-bg);border-color:#f3c3bc}
+.mark{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:15px}
+.ok .mark{background:var(--green)}.ko .mark{background:var(--red)}
+.rname{font-weight:700}.rsol,.rmine{font-size:14px;margin-top:3px}.rmine{color:#B00F00}.rsol{color:#00694a}
+.rnote{margin:8px 0 0;padding:8px 10px;background:#fff;border-radius:8px;font-size:13px;color:#333}
+.bars .brow{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin:12px 0;font-size:14px}
+.brow .bb{grid-column:1/-1;height:8px;background:var(--grey);border-radius:99px;overflow:hidden}.brow .bb span{display:block;height:100%;background:var(--green)}
+.brow .bb.low span{background:var(--red)}
+dialog{border:0;border-radius:18px;padding:0;width:calc(100% - 24px);max-width:600px;max-height:88vh;color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+.dlg{padding:18px;overflow:auto;max-height:88vh}.dlg h2{margin-bottom:10px}
+.dlg .actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}.dlg .actions .btn{flex:1;min-width:130px}
+.map{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.cell{min-height:44px;border:2px solid var(--line);background:#fff;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;color:var(--ink)}
+.cell.done{background:var(--ink);border-color:var(--ink);color:#fff}.cell.cur{outline:3px solid var(--blue);outline-offset:1px}
+.legend{font-size:13px;color:var(--muted);margin:10px 0 0}
+.badge{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:2px 10px;background:#fff3cd;color:#5c4400}
+.small{font-size:13px;color:var(--muted)}
+.gt{display:grid;gap:4px 0;margin:0 0 14px;background:#fff;border:1px solid var(--grey);border-radius:10px;padding:8px;align-items:center}
+.gt .gw{font-size:11px;color:var(--muted);text-align:center;border-left:1px solid var(--grey)}
+.gt .gl{font-size:13px;font-weight:700;grid-column:1}
+.gt .gbar{height:20px;background:var(--blue);border-radius:4px;margin:0 1px}
+.sigle{margin-top:14px;padding:10px 12px;background:#fff;border-radius:10px;font-size:13px;color:#333;border:1px solid var(--grey)}.sigle ul{margin:4px 0 0;padding-left:18px}
+a.lnk{color:var(--blue);font-weight:700;background:none;border:0;padding:0;cursor:pointer;font-size:inherit;text-decoration:underline}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in"><div class="brand">Project Management base<small id="sub">Test finale</small></div><button class="btn small" id="hbtn" hidden>Inizio</button></div></header>
+<main id="app" aria-live="polite"></main>
+<div class="nav" id="nav" hidden><div class="nav-in" id="navin"></div></div>
+<dialog id="dlg"><div class="dlg" id="dlgin"></div></dialog>
+<script>
+/*CONFIG*/
+const CONFIG = {
+  endpoint: 'https://script.google.com/macros/s/AKfycbwqkz7-Y_wKe6jHYf6k5mWEiPeeZAmrx9l_e-jwmtdeuOHP_piZnNzBZFrkSx3SYtf7/exec',            // indirizzo del servizio che raccoglie le risposte (vuoto = modalità prova, dati solo su questo dispositivo)
+  statsKey: 'docente',     // chiave per la pagina statistiche (in modalità prova); con un servizio la verifica la fa il servizio
+  appVersion: 1
+};
+/*DATA*/
+const TESTS = [{"key":"FIN","title":"Test finale","modulo":"Tutto il corso","durata":"12-15 minuti","q":[{"id":"T1-03","modulo":"Modulo 1","t":"single","text":"«Un'attività che produce un risultato nuovo è sempre un progetto.» Qual è la risposta giusta?","why":"Se l'ufficio R&S di un'azienda sviluppa ogni anno nuovi modelli lavora per processo, anche se ogni modello è nuovo. Si distingue cosa si produce (qualcosa di nuovo) da come lo si produce (per processo o per progetto).","src":"Es. 1.1 (la «trappola» dell'attività 11)","opts":["Vero: se il risultato è nuovo, è un progetto","Falso: conta se lo produce in modo continuativo una struttura stabile oppure un team temporaneo e interfunzionale costituito ad hoc","Falso: i progetti non producono mai risultati nuovi","Falso: solo le iniziative sotto i tre anni sono progetti"],"a":1},{"id":"T1-07","modulo":"Modulo 1","t":"single","text":"Il reparto IT sta migrando i dati dei clienti su una nuova piattaforma. Non sono stati fissati né una data di fine né un budget: «si va avanti finché serve». Dopo 18 mesi il team è ancora al lavoro e i requisiti continuano a crescere. Quale lettura è corretta?","why":"I limiti di tempo e di costo servono proprio perché un progetto, per definizione, deve avere un inizio e una fine. Se il committente non li dà (come in certi progetti di ricerca e sviluppo) li definisce il team con la pianificazione. La durata lunga e i requisiti che evolvono non trasformano un progetto in un processo.","src":"Mod. 1 sl. 9-11, note","opts":["È un processo, perché dura molto e continua nel tempo","Ha un risultato unico ma gli mancano i vincoli di tempo e costo: senza una fine e un budget definiti rischia di non concludersi mai, come la «fabbrica del Duomo». Va fissato un limite, anche dal team con la pianificazione se il committente non lo dà","È un progetto ben avviato: i vincoli di tempo e costo non sono tratti distintivi del progetto","Non è un progetto perché i requisiti cambiano: un progetto ha requisiti fissi per tutta la durata"],"a":1},{"id":"T2-03","modulo":"Modulo 2","t":"single","text":"Il committente chiede di anticipare del 30% la consegna senza aggiungere risorse e senza ridurre il perimetro. Che cosa è più probabile, nella logica della triade risultati–tempo–risorse?","why":"Tempo, risorse e risultati sono legati: se ne comprimi uno senza agire sugli altri, paga il terzo. Il PM serve a bilanciarli.","src":"Mod. 2 sl. 2","opts":["Nulla: basta lavorare meglio","Un compromesso sul risultato (qualità o perimetro) oppure un forte rischio di non rispettare i tempi","Una riduzione automatica dei costi","Un aumento automatico delle risorse"],"a":1},{"id":"T2-06","modulo":"Modulo 2","t":"single","text":"Secondo il corso, il successo di un progetto significa…","why":"Il successo non è solo «consegnare»: gestire questo equilibrio è il mestiere del PM.","src":"Mod. 1 sl. 14","opts":["Consegnare nei tempi, qualunque sia il resto","Bilanciare qualità, tempi, costi e soddisfazione del committente","Spendere meno del budget","Chiudere il progetto prima possibile"],"a":1},{"id":"T3-01","modulo":"Modulo 3","t":"order","text":"Metti in ordine le fasi del ciclo di vita del progetto.","why":"Il controllo non è una fase a sé: corre in parallelo a partire dall'esecuzione.","src":"Mod. 3 sl. 3","items":["Ideazione e avviamento","Definizione e pianificazione","Esecuzione","Completamento"]},{"id":"T3-04","modulo":"Modulo 3","t":"single","text":"«Un progetto abbandonato dopo la valutazione preliminare è un fallimento della gestione.»","why":"Molti progetti «muoiono» correttamente nell'ideazione: nelle gare d'appalto ogni concorrente avvia un proprio mini-progetto di valutazione, ma ne viene scelto uno solo. Saper fermarsi in tempo fa parte del valore della fase.","src":"Mod. 3 sl. 9-10, note","fixed":true,"opts":["Vero","Falso"],"a":1},{"id":"T4-01","modulo":"Modulo 3","t":"single","text":"Un'azienda trasferisce un servizio in una nuova sede. Un'associazione di quartiere non ha alcun ruolo nel progetto né potere di decisione, ma teme l'aumento del traffico. È uno stakeholder?","why":"La definizione è ampia: stakeholder è chi può influenzare, essere influenzato o percepirsi interessato da una decisione, attività o risultato del progetto. Comprende anche chi subisce le conseguenze, senza ruolo formale.","src":"Mod. 3 sl. 22","opts":["No: non partecipa al progetto e non decide","Sì: può essere influenzata dal progetto o percepirsi interessata dai suoi effetti, anche senza ruolo formale","Sì, ma solo se ha il potere di bloccare le autorizzazioni","Solo se presenta un reclamo formale"],"a":1},{"id":"T4-04","modulo":"Modulo 3","t":"match","text":"Abbina ogni modo di comunicare al quadrante degli stakeholder a cui conviene.","why":"La strategia segue il quadrante: chi ha potere e interesse si gestisce da vicino; chi ha potere ma poco interesse va tenuto soddisfatto per evitare sorprese; chi ha interesse ma poco potere va ascoltato; chi ha poco di entrambi va semplicemente tenuto informato.","src":"Mod. 3 sl. 26","items":["Coinvolgerlo nelle decisioni e aggiornarlo con frequenza","Rispettarne il ruolo e prevenire le sorprese, con contatti mirati e puntuali","Raccogliere con regolarità le sue osservazioni, perché vive il progetto ogni giorno","Comunicazioni periodiche essenziali, senza assorbire energie"],"cats":["Chiave","Istituzionale","Operativo","Marginale"],"a":[0,1,2,3]},{"id":"T5-02","modulo":"Modulo 4","t":"single","text":"Qual è la differenza fra PBS e WBS?","why":"Prima si definisce che cosa ottenere (sostantivi), poi come ottenerlo (verbi). Da ogni foglia della PBS discendono le attività della WBS.","src":"Mod. 4 sl. 8-9","opts":["Nessuna, sono sinonimi","La PBS scompone i risultati da consegnare (che cosa), la WBS scompone il lavoro da svolgere (come)","La PBS riguarda i costi, la WBS i tempi","La PBS è per i progetti IT, la WBS per tutti gli altri"],"a":1},{"id":"T5-04","modulo":"Modulo 4","t":"single","text":"Un collega presenta la WBS del progetto «Blog aziendale»: contiene tutte le attività tecniche (piattaforma, contenuti, grafica, promozione) e la considera completa. Che obiezione fai?","why":"La WBS deve contenere tutto il lavoro necessario: oltre ai rami dei deliverable servono, al primo livello, le attività di integrazione e di Project Management, altrimenti il progetto è incompleto. Costi e date non fanno parte della WBS: arrivano dopo, con la pianificazione.","src":"Mod. 4 sl. 11-12, note","opts":["Nessuna: la WBS contiene il lavoro tecnico, che è quello che produce i risultati","Mancano le attività indirette, come il coordinamento, l'integrazione e la gestione del progetto: la WBS deve coprire il 100% del lavoro, non solo quello tecnico","Manca l'elenco dei costi di ogni attività","Mancano le date di inizio e di fine di ogni attività"],"a":1},{"id":"T6-02","modulo":"Modulo 5","t":"single","text":"Dall'incrocio di che cosa nascono le matrici RAM e RACI?","why":"Si mettono in relazione i compiti definiti nella WBS con le unità organizzative responsabili.","src":"Mod. 5 sl. 4","opts":["Attività della WBS (righe) e ruoli o unità dell'OBS (colonne)","Costi e tempi","Deliverable e rischi","Fasi e stakeholder"],"a":0},{"id":"T6-06","modulo":"Modulo 5","t":"single","text":"«In una RACI (R = chi esegue, A = chi risponde del risultato), per ogni attività può esserci più di un R, ma una sola A.» Vero o falso?","why":"Chi esegue può essere più di uno; chi risponde del risultato deve essere uno solo, altrimenti nessuno ne risponde davvero. Su questa regola si controlla ogni riga di una RACI.","src":"Mod. 5 sl. 6","fixed":true,"opts":["Vero","Falso"],"a":0},{"id":"T7-01","modulo":"Modulo 6","t":"match","text":"Abbina il metodo di stima alla descrizione.","why":"Le due stime si usano in momenti diversi: all'inizio, quando le informazioni sono poche, e dopo la scomposizione.","src":"Mod. 6 sl. 6","items":["stima di massima iniziale per avere un ordine di grandezza, rapida ma poco accurata","stima specifica dopo la scomposizione in work package, più accurata ma più onerosa"],"cats":["Top-down","Bottom-up"],"a":[0,1]},{"id":"T7-08","modulo":"Modulo 6","t":"single","text":"Due attività che potrebbero svolgersi in parallelo richiedono la stessa persona. Passando da una pianificazione a risorse infinite a una a risorse finite, che cosa può accadere?","why":"Un limite alle risorse ha un riflesso sulla durata. Spesso si calcola prima il piano a risorse infinite e poi si introducono i limiti.","src":"Mod. 6 sl. 9","opts":["Niente: i tempi non cambiano","La durata del progetto può aumentare, perché le attività vanno sequenziate (livellamento delle risorse)","Il costo scende automaticamente","Il progetto diventa più breve"],"a":1},{"id":"T8-04","modulo":"Modulo 6","t":"single","text":"Quattro attività con le loro durate: A non ha predecessori; B e C partono quando finisce A; D parte quando sono finite sia B sia C. Qual è il percorso critico, cioè quello che determina la durata del progetto?","why":"Il percorso critico è il più lungo: A-B-D (9 giorni). Un ritardo su una sua attività sposta la fine del progetto. A-C-D dura 7 giorni, quindi non è critico.","src":"Mod. 6 sl. 18-19","fixed":true,"table":{"head":["Attività","Durata (giorni)","Dopo"],"rows":[["A","2","—"],["B","5","A"],["C","3","A"],["D","2","B e C"]]},"opts":["A → B → D","A → C → D","Tutti e due, perché partono dalla stessa attività"],"a":0},{"id":"T8-06","modulo":"Modulo 6","t":"single","text":"Quattro attività con le loro durate: A non ha predecessori; B e C partono quando finisce A; D parte quando sono finite sia B sia C. Per finire prima, un collega propone di accorciare di un giorno l'attività C. Che effetto ha sulla durata del progetto?","why":"Per accorciare il progetto bisogna intervenire su un'attività del percorso critico (qui A, B o D). Accorciare un'attività che ha margine non fa guadagnare nulla.","src":"Mod. 6 sl. 18-20","table":{"head":["Attività","Durata (giorni)","Dopo"],"rows":[["A","2","—"],["B","5","A"],["C","3","A"],["D","2","B e C"]]},"opts":["Nessuno: C ha un margine di 2 giorni, quindi la fine del progetto non cambia","Il progetto finisce un giorno prima","Il percorso critico diventa A → C → D"],"a":0}]}];
+const GLOSS = {"PM":"Project Manager, il responsabile del progetto","PMO":"Project Management Office, l'ufficio aziendale che coordina e supporta i progetti (metodi, strumenti, standard)","WBS":"Work Breakdown Structure, la scomposizione gerarchica del lavoro in deliverable e attività","PBS":"Product Breakdown Structure, la scomposizione del progetto nei risultati (deliverable) da consegnare","OBS":"Organization Breakdown Structure, la scomposizione dell'organizzazione in unità e ruoli responsabili","RAM":"Responsibility Assignment Matrix, la matrice che incrocia attività e ruoli per assegnare le responsabilità","RACI":"matrice delle responsabilità con quattro ruoli: R esegue, A risponde del risultato, C è consultato, I è informato","SAL":"stato di avanzamento lavori, il rapporto periodico su a che punto è il progetto","PERT":"Program Evaluation and Review Technique, la tecnica che stima la durata con tre valori","PDM":"Precedence Diagram Method, il reticolo in cui le attività sono i nodi e le frecce le dipendenze","ADM":"Arrow Diagram Method, il reticolo in cui le attività sono le frecce e i nodi gli eventi","ES":"Early Start, la data minima di inizio di un'attività (il più presto possibile)","EF":"Early Finish, la data minima di fine di un'attività (il più presto possibile)","FS":"dipendenza Fine–Inizio","SS":"dipendenza Inizio–Inizio","FF":"dipendenza Fine–Fine","SF":"dipendenza Inizio–Fine","IT":"tecnologie dell'informazione (sistemi informativi)","R&S":"ricerca e sviluppo","R&D":"ricerca e sviluppo"};
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+/* ---------- stato ---------- */
+let S = { edition: '', pid: '', view: 'home', test: null, qi: 0, filter: 'bad', statsTest: 0 };
+let DB = { answers: {}, done: {} };   // risposte in corso e test consegnati, per edizione+partecipante
+const dbKey = () => 'pmf:' + S.edition + ':' + S.pid;
+const saveDB = () => LS.set(dbKey(), DB);
+function rnd4() { const a = 'abcdefghjkmnpqrstuvwxyz23456789'; let s = ''; for (let i = 0; i < 6; i++) s += a[Math.floor(Math.random() * a.length)]; return s; }
+function hash(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function rng(seed) { let a = seed; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function shuffled(n, seedStr, notIdentity) {
+  const idx = [...Array(n).keys()], r = rng(hash(seedStr));
+  for (let i = n - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+  if (notIdentity && n > 1 && idx.every((v, i) => v === i)) [idx[0], idx[1]] = [idx[1], idx[0]];
+  return idx;
+}
+const perm = (q, n) => q.fixed ? [...Array(n).keys()] : shuffled(n, S.pid + q.id);
+/* ---------- risposte ---------- */
+const getA = (q) => (DB.answers[S.test] || {})[q.id];
+function setA(q, v) { (DB.answers[S.test] = DB.answers[S.test] || {})[q.id] = v; saveDB(); }
+function answered(q) {
+  const a = getA(q);
+  if (a === undefined || a === null) return false;
+  if (q.t === 'single') return typeof a === 'number';
+  if (q.t === 'multi') return a.length > 0;
+  if (q.t === 'match') return a.every((x) => x !== null && x !== undefined);
+  if (q.t === 'order') return true;
+  if (q.t === 'form') return q.fields.every((f, i) => a[i] !== undefined && a[i] !== '' && a[i] !== null);
+  return false;
+}
+const num = (s) => parseFloat(String(s).replace(',', '.').trim());
+function check(q, a) {
+  if (a === undefined || a === null) return { ok: 0, f: 0 };
+  if (q.t === 'single') { const ok = a === q.a ? 1 : 0; return { ok, f: ok }; }
+  if (q.t === 'multi') { const A = [...a].sort().join(), B = [...q.a].sort().join(); const ok = A === B ? 1 : 0; return { ok, f: ok }; }
+  if (q.t === 'match') { const c = q.a.filter((x, i) => a[i] === x).length; return { ok: c === q.a.length ? 1 : 0, f: c / q.a.length }; }
+  if (q.t === 'order') { const ord = a.length ? a : []; const c = ord.filter((x, i) => x === i).length; return { ok: c === q.items.length ? 1 : 0, f: c / q.items.length }; }
+  if (q.t === 'form') {
+    let c = 0;
+    q.fields.forEach((f, i) => { const v = a[i]; if (f.k === 'num') { if (v !== undefined && v !== '' && Math.abs(num(v) - f.a) < 1e-9) c++; } else if (v === f.a) c++; });
+    return { ok: c === q.fields.length ? 1 : 0, f: c / q.fields.length };
+  }
+  return { ok: 0, f: 0 };
+}
+function givenText(q, a) {
+  if (a === undefined || a === null) return 'nessuna risposta';
+  if (q.t === 'single') return typeof a === 'number' ? q.opts[a] : 'nessuna risposta';
+  if (q.t === 'multi') return a.length ? [...a].sort((x, y) => x - y).map((i) => q.opts[i]).join(' · ') : 'nessuna selezione';
+  if (q.t === 'match') return q.items.map((it, i) => it + ' → ' + (a[i] === null || a[i] === undefined ? '—' : q.cats[a[i]])).join(' · ');
+  if (q.t === 'order') return a.map((i) => q.items[i]).join(' → ');
+  if (q.t === 'form') return q.fields.map((f, i) => f.l + ': ' + (a[i] === undefined || a[i] === '' ? '—' : (f.k === 'pick' ? f.opts[a[i]] : a[i]))).join(' · ');
+  return '';
+}
+function correctText(q) {
+  if (q.t === 'single') return q.opts[q.a];
+  if (q.t === 'multi') return q.a.map((i) => q.opts[i]).join(' · ');
+  if (q.t === 'match') return q.items.map((it, i) => it + ' → ' + q.cats[q.a[i]]).join(' · ');
+  if (q.t === 'order') return q.items.join(' → ');
+  if (q.t === 'form') return q.fields.map((f) => f.l + ': ' + (f.k === 'pick' ? f.opts[f.a] : f.a)).join(' · ');
+  return '';
+}
+function compact(q, a) {   // forma sintetica della risposta da inviare
+  if (a === undefined || a === null) return '';
+  if (q.t === 'single') return String(a);
+  if (q.t === 'multi') return [...a].sort((x, y) => x - y).join(',');
+  if (q.t === 'match') return a.map((x) => (x === null || x === undefined ? '-' : x)).join(',');
+  if (q.t === 'order') return a.join(',');
+  if (q.t === 'form') return a.map((x) => (x === undefined ? '' : String(x))).join('|');
+  return '';
+}
+/* ---------- invio e raccolta ---------- */
+const QKEY = 'pmf:queue', LKEY = () => 'pmf:local:' + S.edition;
+function enqueue(payload) { const q = LS.get(QKEY, []); q.push(payload); LS.set(QKEY, q); }
+async function flush() {
+  const q = LS.get(QKEY, []);
+  if (!q.length) return updStatus();
+  if (!CONFIG.endpoint) { updStatus(); return; }
+  const rest = [];
+  for (const p of q) {
+    try {
+      const r = await fetch(CONFIG.endpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p) });
+      const j = await r.json();
+      if (!j || !j.ok) rest.push(p);
+    } catch (e) { rest.push(p); }
+  }
+  LS.set(QKEY, rest); updStatus();
+}
+function updStatus() { const el = document.getElementById('sendstat'); if (!el) return; const n = LS.get(QKEY, []).length; el.textContent = CONFIG.endpoint ? (n ? n + ' test in attesa di invio: riprova più tardi con la connessione attiva.' : 'Risposte inviate.') : 'Modalità prova: le risposte restano su questo dispositivo.'; }
+function submit() {
+  const t = TESTS[S.test], ans = DB.answers[S.test] || {};
+  const att = ((DB.done[S.test] || {}).attempt || 0) + 1;
+  let score = 0; const rows = t.q.map((q) => { const c = check(q, ans[q.id]); score += c.ok; return { q: q.id, ok: c.ok, f: Math.round(c.f * 100) / 100, g: compact(q, ans[q.id]) }; });
+  const payload = { v: CONFIG.appVersion, edition: S.edition, pid: S.pid, test: t.key, attempt: att, ts: new Date().toISOString(), score, n: t.q.length, answers: rows };
+  DB.done[S.test] = { attempt: att, score, n: t.q.length, rows, answersSnap: JSON.parse(JSON.stringify(ans)) };
+  saveDB();
+  const loc = LS.get(LKEY(), []); loc.push(payload); LS.set(LKEY(), loc);   // copia locale, usata dalla pagina statistiche in modalità prova
+  enqueue(payload); flush();
+}
+/* ---------- viste ---------- */
+function setNav(html) { const n = $('#nav'); if (!html) { n.hidden = true; return; } n.hidden = false; $('#navin').innerHTML = html; }
+function focusTop() { const h = $('#app h1, #app .qtext'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } window.scrollTo(0, 0); }
+function render() {
+  $('#hbtn').hidden = !(S.view === 'test' || S.view === 'result' || S.view === 'stats');
+  if (S.view === 'home') vHome(); else if (S.view === 'test') vTest(); else if (S.view === 'result') vResult(); else if (S.view === 'stats') vStats(); else vStart();
+  focusTop();
+}
+function vStart() {
+  $('#sub').textContent = 'Test finale';
+  setNav('');
+  $('#app').innerHTML = `<p class="eyebrow">Corso di Project Management base</p><h1>Test finale</h1>
+  <p class="lead">Sedici domande sui concetti principali del corso: due per ogni sessione.</p>
+  <div class="card"><p style="margin:0 0 6px"><b>Non è una verifica.</b> Serve a voi per capire che cosa vi resta dopo i due giorni e a noi per capire che cosa può essere migliorato nel corso.</p>
+  <p style="margin:0" class="small">Le risposte sono anonime: non vengono raccolti né nomi né dati personali, solo il codice dell'edizione e un codice casuale generato da questo dispositivo.</p></div>
+  <div class="field"><label for="ed">Codice dell'edizione (lo trovate in aula)</label><input id="ed" autocomplete="off" autocapitalize="characters" value="${esc(S.edition)}" placeholder="per esempio ENEL-2026-11"></div>
+  <div class="stack"><button class="btn primary" id="go">Inizia</button></div>`;
+  $('#go').onclick = () => { const v = $('#ed').value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, ''); if (!v) { $('#ed').focus(); return; } enter(v); };
+  $('#ed').onkeydown = (e) => { if (e.key === 'Enter') $('#go').click(); };
+}
+function enter(ed) {
+  S.edition = ed;
+  const last = LS.get('pmf:last', {});
+  S.pid = (last.edition === ed && last.pid) ? last.pid : rnd4();
+  LS.set('pmf:last', { edition: ed, pid: S.pid });
+  DB = LS.get(dbKey(), { answers: {}, done: {} });
+  S.view = 'home'; render(); flush();
+}
+function vHome() {
+  $('#sub').textContent = 'Edizione ' + S.edition;
+  setNav('');
+  const t = TESTS[0], d = DB.done[0], prog = Object.keys(DB.answers[0] || {}).length;
+  $('#app').innerHTML = `<p class="eyebrow">Edizione ${esc(S.edition)}</p><h1>${esc(t.title)}</h1>
+  <p class="lead">${t.q.length} domande sui concetti principali, circa ${esc(t.durata)}. La correzione commentata compare quando consegnate.</p>
+  <div class="stack"><button class="btn primary" id="st">${d ? 'Rivedi la correzione' : (prog ? 'Continua il test' : 'Inizia il test')}</button></div>
+  <p class="small" id="sendstat"></p>
+  <p class="small"><button class="btn small" id="chg">Cambia edizione</button> <button class="btn small" id="stt">Statistiche del docente</button></p>`;
+  $('#st').onclick = () => openTest(0);
+  $('#chg').onclick = () => { S.view = 'start'; render(); };
+  $('#stt').onclick = () => askKey();
+  updStatus();
+}
+function openTest(i) {
+  S.test = i;
+  if (DB.done[i]) { S.view = 'result'; S.filter = 'bad'; render(); return; }
+  S.qi = 0; S.view = 'test'; render();
+}
+function tableHtml(tb) { return `<div style="overflow-x:auto"><table class="t"><thead><tr>${tb.head.map((h) => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${tb.rows.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`; }
+function corpus(q) { const a = [q.text]; (q.opts || []).forEach((x) => a.push(x)); (q.items || []).forEach((x) => a.push(x)); (q.cats || []).forEach((x) => a.push(x)); if (q.table) q.table.rows.concat([q.table.head]).forEach((r) => r.forEach((c) => a.push(c))); (q.fields || []).forEach((f) => { a.push(f.l); (f.opts || []).forEach((x) => a.push(x)); }); return a.join(' \n '); }
+function sigleOf(q) { const c = corpus(q); return Object.keys(GLOSS).filter((k) => new RegExp('(^|[^A-Za-zÀ-ÿ0-9&])' + k.replace(/[&]/g, '\\&') + '($|[^A-Za-zÀ-ÿ0-9&])').test(c)); }
+function sigleHtml(q) { const k = sigleOf(q); return k.length ? `<div class="sigle"><b>Sigle</b><ul>${k.map((x) => `<li><b>${esc(x)}</b>: ${esc(GLOSS[x])}</li>`).join('')}</ul></div>` : ''; }
+function ganttHtml(g) {
+  let h = `<div class="gt" role="img" aria-label="Diagramma di Gantt: ${g.rows.map((r) => r[0] + ' settimane ' + r[1] + (r[2] > r[1] ? ' a ' + r[2] : '')).join('; ')}" style="grid-template-columns:84px repeat(${g.weeks},1fr)"><span></span>`;
+  for (let w = 1; w <= g.weeks; w++) h += `<span class="gw">S${w}</span>`;
+  g.rows.forEach((r, i) => { h += `<span class="gl">${esc(r[0])}</span>` + `<span class="gbar" style="grid-column:${r[1] + 1} / ${r[2] + 2};grid-row:${i + 2}"></span>`; });
+  return h + '</div>';
+}
+const TYPE_LABEL = { single: 'Una sola risposta', multi: 'Più risposte possibili', match: 'Abbinamento', order: 'Ordinamento', form: 'Calcolo e lettura' };
+function vTest() {
+  const t = TESTS[S.test], q = t.q[S.qi], n = t.q.length;
+  $('#sub').textContent = t.title;
+  let body = '';
+  if (q.table && q.t !== 'form') body += tableHtml(q.table);
+  if (q.gantt) body += ganttHtml(q.gantt);
+  if (q.t === 'single') {
+    const a = getA(q), p = perm(q, q.opts.length);
+    body += `<div class="opts" role="radiogroup" aria-label="Risposte">${p.map((i) => `<button class="opt ${q.fixed && q.opts.length === 2 ? 'vf' : ''}" role="radio" aria-checked="${a === i}" data-i="${i}">${esc(q.opts[i])}</button>`).join('')}</div>`;
+  } else if (q.t === 'multi') {
+    const a = getA(q) || [], p = perm(q, q.opts.length);
+    body += `<p class="hint">Seleziona tutte le risposte che ritieni corrette.</p><div class="opts">${p.map((i) => `<button class="opt" aria-pressed="${a.includes(i)}" data-i="${i}">${esc(q.opts[i])}</button>`).join('')}</div>`;
+  } else if (q.t === 'match') {
+    const a = getA(q) || q.items.map(() => null), p = shuffled(q.items.length, S.pid + q.id + 'm');
+    body += p.map((k) => `<div class="mrow"><p>${esc(q.items[k])}</p><div class="chips" role="group" aria-label="${esc(q.items[k])}">${q.cats.map((c, ci) => `<button class="opt" aria-pressed="${a[k] === ci}" data-k="${k}" data-c="${ci}">${esc(c)}</button>`).join('')}</div></div>`).join('');
+  } else if (q.t === 'order') {
+    let a = getA(q); if (!a) { a = shuffled(q.items.length, S.pid + q.id + 'o', true); setA(q, a); }
+    body += `<p class="hint">Usa le frecce per portare ogni voce nella posizione giusta.</p><ol class="ord">${a.map((v, pos) => `<li><span class="n">${pos + 1}</span><span class="t">${esc(q.items[v])}</span><button data-up="${pos}" aria-label="Sposta su" ${pos === 0 ? 'disabled' : ''}>▲</button><button data-dn="${pos}" aria-label="Sposta giù" ${pos === a.length - 1 ? 'disabled' : ''}>▼</button></li>`).join('')}</ol>`;
+  } else if (q.t === 'form') {
+    const a = getA(q) || [];
+    if (q.table) body += tableHtml(q.table);
+    body += q.fields.map((f, i) => f.k === 'num'
+      ? `<div class="frow"><label for="f${i}">${esc(f.l)}</label><input id="f${i}" inputmode="decimal" autocomplete="off" value="${a[i] !== undefined ? esc(a[i]) : ''}" data-f="${i}"></div>`
+      : `<div class="frow"><label>${esc(f.l)}</label><div class="chips" role="group">${f.opts.map((o, oi) => `<button class="opt" aria-pressed="${a[i] === oi}" data-f="${i}" data-o="${oi}">${esc(o)}</button>`).join('')}</div></div>`).join('');
+  }
+  $('#app').innerHTML = `<div class="progress"><span>Domanda <b>${S.qi + 1}</b> di ${n}</span><span>${esc(q.modulo)}</span></div>
+  <div class="bar"><span style="width:${((S.qi + 1) / n) * 100}%"></span></div>
+  <div class="item"><p class="qtype">${TYPE_LABEL[q.t]}</p><h1 class="qtext">${esc(q.text)}</h1>${body}${sigleHtml(q)}</div>`;
+  const last = S.qi === n - 1;
+  setNav(`<button class="btn" id="bk" ${S.qi === 0 ? 'disabled' : ''}>Indietro</button><button class="btn" id="lst">Elenco</button><button class="btn primary grow" id="fw">${last ? 'Consegna' : 'Avanti'}</button>`);
+  $('#bk').onclick = () => { S.qi--; render(); };
+  $('#lst').onclick = () => openMap();
+  $('#fw').onclick = () => { if (last) confirmSubmit(); else { S.qi++; render(); } };
+  bindQ(q);
+}
+function keepScroll(fn) { const y = window.scrollY; fn(); window.scrollTo(0, y); }
+function bindQ(q) {
+  const A = document.querySelectorAll('#app .opt');
+  if (q.t === 'single') A.forEach((b) => b.onclick = () => { setA(q, +b.dataset.i); keepScroll(() => { vTest(); }); });
+  if (q.t === 'multi') A.forEach((b) => b.onclick = () => { const a = [...(getA(q) || [])], i = +b.dataset.i; const k = a.indexOf(i); if (k >= 0) a.splice(k, 1); else a.push(i); setA(q, a); keepScroll(() => vTest()); });
+  if (q.t === 'match') A.forEach((b) => b.onclick = () => { const a = [...(getA(q) || q.items.map(() => null))]; const k = +b.dataset.k, c = +b.dataset.c; a[k] = a[k] === c ? null : c; setA(q, a); keepScroll(() => vTest()); });
+  if (q.t === 'order') {
+    document.querySelectorAll('[data-up],[data-dn]').forEach((b) => b.onclick = () => { const a = [...getA(q)]; const p = +(b.dataset.up ?? b.dataset.dn); const d = b.dataset.up !== undefined ? -1 : 1; [a[p], a[p + d]] = [a[p + d], a[p]]; setA(q, a); keepScroll(() => vTest()); });
+  }
+  if (q.t === 'form') {
+    document.querySelectorAll('input[data-f]').forEach((inp) => inp.oninput = () => { const a = [...(getA(q) || [])]; a[+inp.dataset.f] = inp.value; setA(q, a); });
+    A.forEach((b) => b.onclick = () => { const a = [...(getA(q) || [])]; a[+b.dataset.f] = +b.dataset.o; setA(q, a); keepScroll(() => vTest()); });
+  }
+}
+function openMap() {
+  const t = TESTS[S.test];
+  $('#dlgin').innerHTML = `<h2>Elenco delle domande</h2><div class="map">${t.q.map((q, i) => `<button class="cell ${answered(q) ? 'done' : ''} ${i === S.qi ? 'cur' : ''}" data-i="${i}" aria-label="Domanda ${i + 1}${answered(q) ? ', risposta data' : ', senza risposta'}">${i + 1}</button>`).join('')}</div>
+  <p class="legend">Scuro = risposta data. Puoi tornare su qualsiasi domanda prima di consegnare.</p><div class="actions"><button class="btn" id="cl">Chiudi</button></div>`;
+  $('#dlg').showModal();
+  $('#cl').onclick = () => $('#dlg').close();
+  document.querySelectorAll('.cell').forEach((c) => c.onclick = () => { S.qi = +c.dataset.i; $('#dlg').close(); render(); });
+}
+function confirmSubmit() {
+  const t = TESTS[S.test], miss = t.q.map((q, i) => answered(q) ? null : i + 1).filter(Boolean);
+  $('#dlgin').innerHTML = `<h2>Consegni il test?</h2><p>${miss.length ? 'Non hai ancora risposto alle domande: ' + miss.join(', ') + '. Se consegni ora risulteranno sbagliate.' : 'Hai risposto a tutte le domande.'}</p><p class="small">Dopo la consegna vedrai la correzione commentata.</p>
+  <div class="actions"><button class="btn" id="no">Torna al test</button><button class="btn primary" id="si">Consegna</button></div>`;
+  $('#dlg').showModal();
+  $('#no').onclick = () => $('#dlg').close();
+  $('#si').onclick = () => { $('#dlg').close(); submit(); S.view = 'result'; S.filter = 'bad'; render(); };
+}
+function vResult() {
+  const t = TESTS[S.test], d = DB.done[S.test], ans = d.answersSnap || {};
+  $('#sub').textContent = t.title;
+  const pct = d.score / d.n;
+  const msg = pct >= .8 ? 'Ottimo: i concetti principali del corso sono ben chiari.' : pct >= .5 ? 'Buona base: date un\'occhiata alle domande segnalate in rosso.' : 'Alcuni concetti meritano una ripassata: le domande in rosso dicono quali.';
+  const rows = t.q.map((q, i) => ({ q, i, c: check(q, ans[q.id]) }));
+  const shown = S.filter === 'bad' ? rows.filter((r) => !r.c.ok) : rows;
+  $('#app').innerHTML = `<div class="hero"><p class="eyebrow">${esc(t.title)}</p><div class="score">${d.score}<span> / ${d.n}</span></div><p>${msg}</p></div>
+  <div class="seg" role="group"><button aria-pressed="${S.filter === 'bad'}" data-f="bad">Da rivedere (${rows.filter((r) => !r.c.ok).length})</button><button aria-pressed="${S.filter === 'all'}" data-f="all">Tutte (${rows.length})</button></div>
+  <ul class="list">${shown.map((r) => `<li class="row ${r.c.ok ? 'ok' : 'ko'}"><span class="mark">${r.c.ok ? '✓' : '✕'}</span><div><div class="small">${esc(r.q.modulo)}</div><div class="rname">${r.i + 1}. ${esc(r.q.text)}</div>
+    ${r.c.ok ? '' : `<div class="rmine">La tua risposta: ${esc(givenText(r.q, ans[r.q.id]))}</div>`}<div class="rsol">Risposta corretta: ${esc(correctText(r.q))}</div>
+    <div class="rnote">${esc(r.q.why)}${r.q.src ? ' <span class="small">[' + esc(r.q.src) + ']</span>' : ''}</div></div></li>`).join('') || '<li class="row ok"><span class="mark">✓</span><div class="rname">Nessuna domanda da rivedere.</div></li>'}</ul>
+  <p class="small" id="sendstat"></p>`;
+  document.querySelectorAll('.seg button').forEach((b) => b.onclick = () => { S.filter = b.dataset.f; keepScroll(() => vResult()); });
+  setNav(`<button class="btn grow primary" id="hm">Chiudi</button>`);
+  $('#hm').onclick = () => { S.view = 'home'; render(); };
+  updStatus();
+}
+/* ---------- statistiche del docente ---------- */
+function askKey() {
+  $('#dlgin').innerHTML = `<h2>Statistiche del docente</h2><div class="field"><label for="kk">Chiave docente</label><input id="kk" type="password" autocomplete="off"></div><p class="small" id="kmsg"></p>
+  <div class="actions"><button class="btn" id="kc">Annulla</button><button class="btn primary" id="ko">Apri</button></div>`;
+  $('#dlg').showModal();
+  $('#kc').onclick = () => $('#dlg').close();
+  $('#ko').onclick = async () => { const k = $('#kk').value; $('#kmsg').textContent = 'Carico…'; const ok = await loadStats(k); if (ok) { $('#dlg').close(); S.view = 'stats'; render(); } else $('#kmsg').textContent = 'Chiave non valida o dati non raggiungibili.'; };
+  $('#kk').onkeydown = (e) => { if (e.key === 'Enter') $('#ko').click(); };
+}
+let STATS = [];
+async function loadStats(key) {
+  if (!CONFIG.endpoint) { if (key !== CONFIG.statsKey) return false; STATS = LS.get(LKEY(), []); return true; }
+  try { const r = await fetch(CONFIG.endpoint + '?action=stats&edition=' + encodeURIComponent(S.edition) + '&key=' + encodeURIComponent(key)); const j = await r.json(); if (!j.ok) return false; STATS = j.submissions; return true; } catch (e) { return false; }
+}
+function vStats() {
+  $('#sub').textContent = 'Statistiche · edizione ' + S.edition;
+  setNav('');
+  const t = TESTS[S.statsTest];
+  const subs = STATS.filter((s) => s.test === t.key && s.attempt === 1);
+  const per = t.q.map((q) => { let n = 0, ok = 0; subs.forEach((s) => { const r = s.answers.find((a) => a.q === q.id); if (r) { n++; ok += r.ok; } }); return { q, n, ok, p: n ? ok / n : null }; });
+  const avg = subs.length ? subs.reduce((a, s) => a + s.score / s.n, 0) / subs.length : null;
+  const worst = [...per].filter((x) => x.n).sort((a, b) => a.p - b.p).slice(0, 3);
+  $('#app').innerHTML = `<p class="eyebrow">Solo per il docente</p><h1>Giuste e sbagliate</h1>
+  
+  <div class="card"><b>${esc(t.title)}</b><br>Partecipanti (prima consegna): <b>${subs.length}</b>${avg === null ? '' : ' · punteggio medio: <b>' + Math.round(avg * 100) + '%</b>'}</div>
+  ${worst.length ? `<div class="card"><b>Le tre domande con meno risposte giuste</b><ol style="margin:8px 0 0;padding-left:20px">${worst.map((w) => `<li>${w.q.id}: ${esc(w.q.text)} <span class="badge">${Math.round(w.p * 100)}% giuste</span></li>`).join('')}</ol></div>` : '<p class="small">Nessuna risposta raccolta per questo test.</p>'}
+  ${(() => { const m = {}; per.forEach((x) => { const k = x.q.modulo; m[k] = m[k] || { n: 0, ok: 0 }; m[k].n += x.n; m[k].ok += x.ok; }); return `<div class="card"><b>Per modulo</b><ul style="margin:8px 0 0;padding-left:20px">${Object.keys(m).map((k) => `<li>${esc(k)}: ${m[k].n ? Math.round(m[k].ok / m[k].n * 100) + '% giuste' : '—'}</li>`).join('')}</ul></div>`; })()}
+  <div class="bars">${per.map((x) => `<div class="brow"><span>${esc(x.q.modulo)} · ${x.q.id} · ${esc(x.q.text.length > 90 ? x.q.text.slice(0, 90) + '…' : x.q.text)}</span><b>${x.n ? Math.round(x.p * 100) + '%' : '—'}</b><div class="bb ${x.p !== null && x.p < .5 ? 'low' : ''}"><span style="width:${x.p === null ? 0 : x.p * 100}%"></span></div></div>`).join('')}</div>
+  <p class="small">${CONFIG.endpoint ? 'Dati raccolti per questa edizione.' : 'Modalità prova: sono mostrati solo i test fatti su questo dispositivo.'}</p>
+  <div class="stack"><button class="btn" id="csv">Scarica i dati (CSV)</button></div>`;
+  document.querySelectorAll('.seg button').forEach((b) => b.onclick = () => { S.statsTest = +b.dataset.t; keepScroll(() => vStats()); });
+  $('#csv').onclick = () => {
+    const L = ['edizione;partecipante;test;tentativo;domanda;giusta;frazione;risposta;data'];
+    STATS.forEach((s) => s.answers.forEach((a) => L.push([s.edition, s.pid, s.test, s.attempt, a.q, a.ok, a.f, '"' + a.g + '"', s.ts].join(';'))));
+    const blob = new Blob(['﻿' + L.join('\n')], { type: 'text/csv;charset=utf-8' }); const u = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = u; a.download = 'risposte-' + S.edition + '.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+  };
+}
+/* ---------- avvio ---------- */
+$('#hbtn').onclick = () => { S.view = 'home'; render(); };
+(function init() {
+  const p = new URLSearchParams(location.search), e = (p.get('e') || '').toUpperCase().replace(/[^A-Z0-9_-]/g, '');
+  const last = LS.get('pmf:last', {});
+  if (e) enter(e); else if (last.edition) { S.edition = last.edition; enter(last.edition); } else { S.view = 'start'; render(); }
+})();
+</script>
+</body>
+</html>
